@@ -11,15 +11,15 @@ export default function AboutSection() {
           
           <div className="grid md:grid-cols-3 gap-8 items-center">
             <div className="md:col-span-1 flex justify-center">
-              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20">
-                <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300"
-                  alt="Professional headshot"
-                  className="w-full h-full object-cover"
-                  data-testid="img-profile"
-                />
-              </div>
-            </div>
+  <div className="w-70 h-70 overflow-hidden border-4 border-primary/20 rounded-lg shadow-lg">
+    <img
+      src="/1752865321131.jpeg"
+      alt="Professional headshot"
+      className="w-full h-full object-cover"
+      data-testid="img-profile"
+    />
+  </div>
+</div>
             
             <div className="md:col-span-2 space-y-6">
               <p className="text-lg text-muted leading-relaxed" data-testid="text-bio">
