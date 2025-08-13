@@ -90,7 +90,9 @@
   
   .canvas-container {
     @apply h-[500px] relative overflow-hidden rounded-xl;
-    background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+    background: linear-gradient(45deg, rgba(59, 130, 246, 0.05), rgba(16, 185, 129, 0.05), rgba(0, 0, 0, 0.1));
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(59, 130, 246, 0.1);
   }
   
   .skill-badge {

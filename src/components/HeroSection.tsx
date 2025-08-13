@@ -77,14 +77,10 @@ export default function HeroSection() {
           {/* RIGHT SIDE — AVATAR + AI Clone Text */}
           <div className="canvas-container animate-slide-in w-full h-[400px] lg:h-[500px]">
             <Canvas shadows camera={{ position: [0, 0, 8], fov: 50 }}>
-              <color attach="background" args={["#ececec"]} />
               <Experience />
-
-              {/* AI Clone Floating Text */}
-              
-
             </Canvas>
           </div>
+        
         </div>
       </div>
     </section>
