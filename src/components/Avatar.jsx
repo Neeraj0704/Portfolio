@@ -16,10 +16,14 @@ export function Avatar(props) {
   const { animations: idleAnimation } = useFBX("Animations/Idle (1).fbx");
   const { animations: greetAnimation } = useFBX("Animations/Standing Greeting.fbx")
   const { animations: talkAnimation } = useFBX("Animations/Talking (1).fbx")
+  const { animations: saluteAnimation} = useFBX("Animations/Salute.fbx")
+  const { animations: headnodAnimation} = useFBX("Animations/Head Nod Yes.fbx")
 
   idleAnimation[0].name = "Idle";
   greetAnimation[0].name = "Greet";
   talkAnimation[0].name = "Talk";
+  saluteAnimation[0].name = "Salute";
+  headnodAnimation[0].name = "Headnod";
 
   const [animation, setAnimation] = useState("Idle");
 
@@ -55,7 +59,7 @@ export function Avatar(props) {
       {...props} 
       dispose={null} 
       ref={group} 
-      onPointerOver={() => !props.triggerGreeting && setAnimation("Greet")}
+      //onPointerOver={() => !props.triggerGreeting && setAnimation("Greet")}
       onPointerOut={() => !props.triggerGreeting && setAnimation("Idle")}
     >
       <primitive object={nodes.Hips} />
