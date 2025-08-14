@@ -1,4 +1,5 @@
 import { Code, Check, BookOpen } from "lucide-react";
+import { Button } from "./ui/button";
 
 export default function ExperienceSection() {
   return (
@@ -131,6 +132,14 @@ export default function ExperienceSection() {
                         Used machine learning and explainable AI to improve early
                         detection. Presented at the IEEE CVMI Conference, IIIT
                         Allahabad (Oct 2024).
+                        <a
+        href="https://ieeexplore.ieee.org/document/10781815"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="ml-2 inline-block px-3 py-1 text-sm bg-primary text-white rounded hover:bg-primary/80 transition-colors"
+      >
+        View Paper
+      </a>
                       </p>
                     </div>
                     <div>

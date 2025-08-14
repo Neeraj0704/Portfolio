@@ -38,11 +38,26 @@ export function Avatar(props) {
   }
 }, [animation, actions]);
   
+// Handle greeting animation trigger
+  useEffect(() => {
+    if (props.triggerGreeting) {
+      setAnimation("Greet");
+      // Return to idle after greeting animation
+      setTimeout(() => {
+        setAnimation("Idle");
+      }, 6000);
+    }
+  }, [props.triggerGreeting]);
   
 
   return (
-    <group {...props} dispose={null} ref={group} onPointerOver={() => setAnimation("Greet")}
-      onPointerOut={() => setAnimation("Idle")}>
+    <group 
+      {...props} 
+      dispose={null} 
+      ref={group} 
+      onPointerOver={() => !props.triggerGreeting && setAnimation("Greet")}
+      onPointerOut={() => !props.triggerGreeting && setAnimation("Idle")}
+    >
       <primitive object={nodes.Hips} />
       <skinnedMesh name="Wolf3D_Avatar" geometry={nodes.Wolf3D_Avatar.geometry} material={materials.Wolf3D_Avatar} skeleton={nodes.Wolf3D_Avatar.skeleton} morphTargetDictionary={nodes.Wolf3D_Avatar.morphTargetDictionary} morphTargetInfluences={nodes.Wolf3D_Avatar.morphTargetInfluences} />
     </group>

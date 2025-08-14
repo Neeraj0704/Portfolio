@@ -149,7 +149,7 @@ export default function ContactSection() {
               {/* Social Links */}
               <div className="flex space-x-4">
                 <a
-                  href="https://linkedin.com/in/neerajvpattanashetti"
+                  href="https://www.linkedin.com/in/neeraj-vp-613305239/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
@@ -158,7 +158,7 @@ export default function ContactSection() {
                   <Linkedin />
                 </a>
                 <a
-                  href="https://github.com/neerajvpattanashetti"
+                  href="https://github.com/Neeraj0704"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
