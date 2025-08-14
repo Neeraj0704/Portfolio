@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage } from "./storage.ts";
 import nodemailer from "nodemailer";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -20,7 +20,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         service: "gmail",
         auth: {
           user: "neerajvpattanashetti@gmail.com",
-          pass: "Nakulneeraj@123", // Replace with Gmail App Password
+          pass: "ssfz lamn hnoi ezon", // Replace with Gmail App Password
         },
       });
 
