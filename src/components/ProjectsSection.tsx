@@ -15,7 +15,7 @@ export default function ProjectsSection() {
       title: "Hospital Connect",
       date: "Oct 2024",
       description: "React.js-based healthcare platform enabling users to locate nearby hospitals, access real-time resource availability and virtual consultations with Google Maps APIs integration.",
-      image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300",
+      image: "/download.webp",
       technologies: ["React.js", "Google Maps API", "Firebase", "Real-time Chat"],
     },
     {

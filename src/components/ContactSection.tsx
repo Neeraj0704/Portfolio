@@ -14,10 +14,11 @@ export default function ContactSection() {
     message: "",
   });
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.email || !formData.message) {
       toast({
         title: "Error",
@@ -27,24 +28,46 @@ export default function ContactSection() {
       return;
     }
 
-    // Here you would typically send the form data to your backend
-    toast({
-      title: "Message Sent!",
-      description: "Thank you for your message. I'll get back to you soon.",
-    });
+    try {
+      setLoading(true);
+      const res = await fetch("/api/contact/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-    });
+      const data = await res.json();
+
+      if (res.ok) {
+        toast({
+          title: "Message Sent!",
+          description: "Thank you for your message. I'll get back to you soon.",
+        });
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        throw new Error(data.error || "Failed to send message");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Something went wrong.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -59,16 +82,22 @@ export default function ContactSection() {
               Get In <span className="text-primary">Touch</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              I'm always open to discussing new opportunities, interesting projects, or just having a chat about technology.
+              I'm always open to discussing new opportunities, interesting
+              projects, or just having a chat about technology.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 gap-12 items-start">
             {/* Contact Info */}
             <div className="space-y-8">
-              <div className="glass-morphism p-8 rounded-xl" data-testid="section-contact-info">
-                <h3 className="text-2xl font-bold text-foreground mb-6">Contact Information</h3>
-                
+              <div
+                className="glass-morphism p-8 rounded-xl"
+                data-testid="section-contact-info"
+              >
+                <h3 className="text-2xl font-bold text-foreground mb-6">
+                  Contact Information
+                </h3>
+
                 <div className="space-y-6">
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
@@ -76,32 +105,47 @@ export default function ContactSection() {
                     </div>
                     <div>
                       <p className="text-foreground font-medium">Email</p>
-                      <p className="text-muted-foreground" data-testid="text-email">neerajvpattanashetti@gmail.com</p>
+                      <p
+                        className="text-muted-foreground"
+                        data-testid="text-email"
+                      >
+                        neerajvpattanashetti@gmail.com
+                      </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
                       <Phone className="text-primary" />
                     </div>
                     <div>
                       <p className="text-foreground font-medium">Phone</p>
-                      <p className="text-muted-foreground" data-testid="text-phone">+1 (312) 937-0261</p>
+                      <p
+                        className="text-muted-foreground"
+                        data-testid="text-phone"
+                      >
+                        +1 (312) 937-0261
+                      </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
                       <MapPin className="text-primary" />
                     </div>
                     <div>
                       <p className="text-foreground font-medium">Location</p>
-                      <p className="text-muted-foreground" data-testid="text-location">Chicago, Illinois</p>
+                      <p
+                        className="text-muted-foreground"
+                        data-testid="text-location"
+                      >
+                        Chicago, Illinois
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
-              
+
               {/* Social Links */}
               <div className="flex space-x-4">
                 <a
@@ -124,14 +168,24 @@ export default function ContactSection() {
                 </a>
               </div>
             </div>
-            
+
             {/* Contact Form */}
-            <div className="glass-morphism p-8 rounded-xl" data-testid="form-contact">
-              <h3 className="text-2xl font-bold text-foreground mb-6">Send Message</h3>
-              
+            <div
+              className="glass-morphism p-8 rounded-xl"
+              data-testid="form-contact"
+            >
+              <h3 className="text-2xl font-bold text-foreground mb-6">
+                Send Message
+              </h3>
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <Label htmlFor="name" className="text-foreground font-medium">Name *</Label>
+                  <Label
+                    htmlFor="name"
+                    className="text-foreground font-medium"
+                  >
+                    Name *
+                  </Label>
                   <Input
                     id="name"
                     name="name"
@@ -139,14 +193,19 @@ export default function ContactSection() {
                     placeholder="Your Name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="mt-2 bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground focus:border-primary"
+                    className="mt-2 bg-secondary/50 border-border text-black placeholder:text-muted-foreground focus:border-primary"
                     data-testid="input-name"
                     required
                   />
                 </div>
-                
+
                 <div>
-                  <Label htmlFor="email" className="text-foreground font-medium">Email *</Label>
+                  <Label
+                    htmlFor="email"
+                    className="text-foreground font-medium"
+                  >
+                    Email *
+                  </Label>
                   <Input
                     id="email"
                     name="email"
@@ -154,14 +213,19 @@ export default function ContactSection() {
                     placeholder="your.email@example.com"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="mt-2 bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground focus:border-primary"
+                    className="mt-2 bg-secondary/50 border-border text-black placeholder:text-muted-foreground focus:border-primary resize-none"
                     data-testid="input-email"
                     required
                   />
                 </div>
-                
+
                 <div>
-                  <Label htmlFor="subject" className="text-foreground font-medium">Subject</Label>
+                  <Label
+                    htmlFor="subject"
+                    className="text-foreground font-medium"
+                  >
+                    Subject
+                  </Label>
                   <Input
                     id="subject"
                     name="subject"
@@ -169,13 +233,18 @@ export default function ContactSection() {
                     placeholder="Project Inquiry"
                     value={formData.subject}
                     onChange={handleInputChange}
-                    className="mt-2 bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground focus:border-primary"
+                    className="mt-2 bg-secondary/50 border-border text-black placeholder:text-muted-foreground focus:border-primary resize-none"
                     data-testid="input-subject"
                   />
                 </div>
-                
+
                 <div>
-                  <Label htmlFor="message" className="text-foreground font-medium">Message *</Label>
+                  <Label
+                    htmlFor="message"
+                    className="text-foreground font-medium"
+                  >
+                    Message *
+                  </Label>
                   <Textarea
                     id="message"
                     name="message"
@@ -183,19 +252,20 @@ export default function ContactSection() {
                     placeholder="Tell me about your project..."
                     value={formData.message}
                     onChange={handleInputChange}
-                    className="mt-2 bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground focus:border-primary resize-none"
+                    className="mt-2 bg-secondary/50 border-border text-black placeholder:text-muted-foreground focus:border-primary resize-none"
                     data-testid="textarea-message"
                     required
                   />
                 </div>
-                
+
                 <Button
                   type="submit"
+                  disabled={loading}
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 flex items-center justify-center space-x-2"
                   data-testid="button-submit"
                 >
-                  <span>Send Message</span>
-                  <Send className="h-4 w-4" />
+                  {loading ? "Sending..." : <span>Send Message</span>}
+                  {!loading && <Send className="h-4 w-4" />}
                 </Button>
               </form>
             </div>

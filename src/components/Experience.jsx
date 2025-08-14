@@ -33,7 +33,11 @@ export const Experience = () => {
             </div>
             <button
               onClick={handleChatClick}
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-1 px-2.5 rounded-md transition-all duration-300 transform hover:scale-105 text-xs"
+              className="w-full h-10 flex items-center justify-center 
+             bg-gradient-to-r from-blue-500 to-purple-600 
+             hover:from-blue-600 hover:to-purple-700 
+             text-white font-medium rounded-md 
+             transition-all duration-300 transform hover:scale-105 text-xs"
             >
               Let's Chat! 🚀
             </button>
