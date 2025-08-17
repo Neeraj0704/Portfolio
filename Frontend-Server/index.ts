@@ -1,59 +1,29 @@
-import express, { type Request, type Response, type NextFunction } from "express";
+import express from "express";
+import cors from "cors";
 import { registerRoutes } from "./routes.ts";
-import { setupVite, serveStatic, log } from "./vite.ts";
-import os from "os";
 
 const app = express();
+
+// ✅ Enable CORS for frontend
+app.use(
+  cors({
+    origin: "http://localhost:5173", // frontend dev server
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
+
+// ✅ Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Logging middleware
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined;
+// ✅ Register all routes
+console.log("1");
+registerRoutes(app);
 
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-      if (logLine.length > 80) logLine = logLine.slice(0, 79) + "…";
-      log(logLine);
-    }
-  });
-
-  next();
+// ✅ Start server
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
 
-(async () => {
-  const server = await registerRoutes(app); // << API routes mounted here
-
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-    res.status(status).json({ message });
-    throw err;
-  });
-
-  if (app.get("env") === "development") {
-    await setupVite(app, server); // << Vite after API routes
-  } else {
-    serveStatic(app);
-  }
-
-  const host = os.platform() === "win32" ? "localhost" : "0.0.0.0";
-  const port = parseInt(process.env.PORT || "5000", 10);
-
-  server.listen(port, host, () => {
-    log(`Server running on http://${host}:${port}`);
-  });
-})();

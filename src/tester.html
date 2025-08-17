@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>🎤 Say something...</h1>
+    <script>
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        alert("❌ SpeechRecognition not supported");
+      } else {
+        const recognition = new SpeechRecognition();
+        recognition.lang = "en-US";
+        recognition.continuous = false;
+
+        recognition.onstart = () => console.log("🎙️ Recognition started");
+        recognition.onresult = (e) =>
+          console.log("🗣️ Heard:", e.results[0][0].transcript);
+        recognition.onerror = (e) => console.error("⚠️ Error:", e.error);
+        recognition.onend = () => console.log("⏹️ Recognition ended");
+
+        recognition.start();
+      }
+    </script>
+  </body>
+</html>
