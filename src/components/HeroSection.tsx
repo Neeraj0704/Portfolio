@@ -2,10 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Linkedin, Github, Mail } from "lucide-react";
 import { Canvas } from "@react-three/fiber";
 import { Experience } from "./Experience";
-import { Text } from "@react-three/drei";
-//import FloatingCard from "./ui/floatingCard";
+import { motion } from "framer-motion";
+import { useIsMobile } from "../hooks/use-mobile";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "./ui/tooltip";
 
 export default function HeroSection() {
+  const isMobile = useIsMobile();
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -17,6 +19,7 @@ export default function HeroSection() {
     <section id="home" className="min-h-screen flex items-center pt-20">
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
+          
           {/* LEFT TEXT SECTION */}
           <div className="space-y-8 animate-fade-in">
             <div className="space-y-4">
@@ -74,13 +77,43 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* RIGHT SIDE — AVATAR + AI Clone Text */}
-          <div className="canvas-container animate-slide-in w-full h-[400px] lg:h-[500px]">
-            <Canvas shadows camera={{ position: [0, 0, 8], fov: 50 }}>
+          {/* RIGHT SIDE — INFO BUTTON + CANVAS */}
+          <div className="relative w-full h-[300px] sm:h-[400px] lg:h-[500px]">
+            {/* Tooltip Button Overlay */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="absolute top-2 left-2 text-muted-foreground hover:text-primary z-[9999]"
+                  >
+                    INFO
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="z-[9999]">
+                  <p>
+                    Best viewed on desktop.<br />
+                    Expect some latency.<br />
+                    Apologies for the inconvenience!
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            {/* 3D Canvas */}
+            
+            <Canvas 
+              shadows 
+              camera={{ 
+                position: [0, 0, window.innerWidth < 768 ? 10 : 8], 
+                fov: window.innerWidth < 768 ? 60 : 50 
+              }}
+              className="w-full h-full"
+            >
               <Experience />
             </Canvas>
           </div>
-        
         </div>
       </div>
     </section>
