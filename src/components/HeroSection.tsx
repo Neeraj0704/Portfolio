@@ -86,12 +86,12 @@ export default function HeroSection() {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="absolute top-2 left-2 text-muted-foreground hover:text-primary z-[9999]"
+                    className="absolute top-2 left-2 text-muted-foreground hover:text-primary "
                   >
                     INFO
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="z-[9999]">
+                <TooltipContent className="">
                   <p>
                     Best viewed on desktop.<br />
                     Expect some latency.<br />

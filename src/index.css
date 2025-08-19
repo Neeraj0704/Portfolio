@@ -89,18 +89,27 @@
   }
   
   .canvas-container {
-    @apply h-[500px] relative overflow-hidden rounded-xl;
-    background: linear-gradient(45deg, rgba(59, 130, 246, 0.05), rgba(16, 185, 129, 0.05), rgba(0, 0, 0, 0.1));
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(59, 130, 246, 0.1);
-     @media (max-width: 640px) {
-    .canvas-container {
-      @apply ml-0 mr-auto;
-      min-height: 280px;
-    }
+  @apply h-[500px] relative overflow-hidden rounded-xl;
+  background: linear-gradient(
+    45deg,
+    rgba(59, 130, 246, 0.05),
+    rgba(16, 185, 129, 0.05),
+    rgba(0, 0, 0, 0.1)
+  );
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+@media (max-width: 640px) {
+  .canvas-container {
+    @apply ml-[-100px]; /* pushes it 20px further left */
+    min-height: 280px;
+    height: auto;
   }
+}
+  
     
-  }
+  
   
   .skill-badge {
     @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
@@ -114,4 +123,6 @@
     backdrop-filter: blur(16px);
     background: rgba(0, 0, 0, 0.8);
   }
+
+  
 }

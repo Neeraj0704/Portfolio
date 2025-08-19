@@ -23,11 +23,16 @@ export const Experience = () => {
   const currentAudioRef = useRef(null);
   const isMobile = useMediaQuery({ maxWidth: 768 }); // Adjust breakpoint as needed
 
-  const scrollToBottom = () => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-    }
-  };
+ const scrollToBottom = () => {
+  if (chatContainerRef.current) {
+    setTimeout(() => {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }, 500); // 👈 close setTimeout with a delay (0 ms if you want instant)
+  }
+};
 
   useEffect(() => {
     scrollToBottom();
@@ -208,177 +213,174 @@ export const Experience = () => {
   };
 
     return (
-    <>
-      {/* Disable OrbitControls when chat is started */}
-      {!chatStarted && <OrbitControls enableZoom={false} enablePan={false} />}
-      
-      {/* Fixed Avatar position */}
-      <Avatar 
-        position={[1, -3, 5]} 
-        scale={2} 
-        triggerGreeting={triggerGreeting}
-        triggerTalking={triggerTalking}
-        triggerSalute={triggerSalute}
-        isTyping={isTyping}
-/>
-      
-      <Environment preset="sunset" />
-      
-      {/* Chat Interface - Fixed positioning */}
-      <Html
-        position={[-5, 0, 0]}
-        transform={false}
-        occlude={false}
-        style={{
-          position: 'fixed',
-          top: '50%',
-          left: '20px',
-          transform: 'translateY(-50%)',
-          zIndex: 1000,
-          pointerEvents: 'auto'
-        }}
-      >
-        <AnimatePresence>
-          {!chatStarted ? (
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              className="flex flex-col items-center space-y-4"
-            >
-              <div className="glass-morphism p-6 text-center w-80 ">
-                <MessageCircle className="w-12 h-12 text-primary mx-auto mb-4" />
-                <h3 className="text-xl font-bold mb-2 text-white">Chat with Neeraj's AI</h3>
-                <p className="text-gray-300 text-sm mb-4">
-                  Ask me about Neeraj's experience, projects, and skills!
-                </p>
-                <button
-                  onClick={handleChatClick}
-                  className="bg-primary hover:bg-primary/80 text-white px-6 py-2 rounded-lg font-medium transition-colors"
-                >
-                  Let's Talk
-                </button>
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="glass-morphism w-96 h-96 flex flex-col"
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-700">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-white font-medium">Neeraj's AI Avatar</span>
-                </div>
-                <button
-                  onClick={handleBackClick}
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Messages */}
-              <div
-                ref={chatContainerRef}
-                className="flex-1 overflow-y-auto p-4 space-y-3"
+  <>
+    {/* Disable OrbitControls when chat is started */}
+    {!chatStarted && <OrbitControls enableZoom={false} enablePan={false} />}
+    
+    {/* Fixed Avatar position */}
+    <Avatar 
+      position={[1, -3, 5]} 
+      scale={2} 
+      triggerGreeting={triggerGreeting}
+      triggerTalking={triggerTalking}
+      triggerSalute={triggerSalute}
+      isTyping={isTyping}
+    />
+    
+    <Environment preset="sunset" />
+    
+    {/* Chat Interface - Fixed positioning */}
+    <Html
+      position={[-5, 0, 0]}
+      transform={false}
+      occlude={false}
+      style={{
+        position: 'fixed',
+        top: '50%',
+        left: '20px',
+        transform: 'translateY(-50%)',
+        zIndex: 10,
+        pointerEvents: 'auto'
+      }}
+    >
+      <AnimatePresence>
+        {!chatStarted ? (
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            className="flex flex-col items-center space-y-4"
+          >
+            <div className="glass-morphism p-4 text-center w-64 h-64 sm:w-80 sm:h-80 mx-auto">
+              <MessageCircle className="w-10 sm:w-12 h-10 sm:h-12 text-primary mx-auto mb-2 sm:mb-4" />
+              <h3 className="text-lg sm:text-xl font-bold mb-1 sm:mb-2 text-white">Chat with Neeraj's AI</h3>
+              <p className="text-gray-300 text-xs sm:text-sm mb-2 sm:mb-4">
+                Ask me about Neeraj's experience, projects, and skills!
+              </p>
+              <button
+                onClick={handleChatClick}
+                className="bg-primary hover:bg-primary/80 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-lg font-medium transition-colors text-xs sm:text-sm"
               >
-                {messages.map((message, index) => (
-                  <div
-                    key={index}
-                    className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    <div
-                      className={`max-w-[80%] p-3 rounded-lg text-sm ${
-                        message.type === "user"
-                          ? "bg-primary text-white"
-                          : "bg-gray-700 text-gray-100"
-                      }`}
-                    >
-                      {message.text}
-                    </div>
-                  </div>
-                ))}
+                Let's Talk
+              </button>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="glass-morphism p-2 sm:p-4 text-center w-64 h-64 sm:w-96 sm:h-[400px] mx-auto flex flex-col"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-2 sm:p-4 border-b border-gray-700">
+              <div className="flex items-center space-x-1 sm:space-x-2">
+                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-white text-xs sm:text-base font-medium">Neeraj's AI Avatar</span>
               </div>
+              <button
+                onClick={handleBackClick}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="w-4 sm:w-5 h-4 sm:h-5" />
+              </button>
+            </div>
 
-              {/* Input Area - Only show after welcome */}
-              {welcomeCompleted && (
-                <div className="p-4 border-t border-gray-700">
-                  {/* Mode Toggle */}
-                  <div className="flex space-x-2 mb-3">
-                    <button
-                      onClick={() => {
-                        setInputMode("text");
-                        if (recognitionRef.current) recognitionRef.current.stop();
-                        setListening(false);
-                      }}
-                      className={`flex-1 py-2 px-3 rounded text-sm transition-colors ${
-                        inputMode === "text"
-                          ? "bg-primary text-white"
-                          : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                      }`}
-                    >
-                      Text
-                    </button>
-                    <button
-                      onClick={() => setInputMode("voice")}
-                      className={`flex-1 py-2 px-3 rounded text-sm transition-colors ${
-                        inputMode === "voice"
-                          ? "bg-primary text-white"
-                          : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                      }`}
-                    >
-                      Voice
-                    </button>
+            {/* Messages */}
+            <div
+              ref={chatContainerRef}
+              className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-1 sm:space-y-3 text-xs sm:text-sm"
+            >
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`max-w-[80%] p-1 sm:p-3 rounded-lg text-xs sm:text-sm ${
+                      message.type === "user"
+                        ? "bg-primary text-white"
+                        : "bg-gray-700 text-gray-100"
+                    }`}
+                  >
+                    {message.text}
                   </div>
-
-                  {/* Input Controls */}
-                  {inputMode === "text" ? (
-                    <form onSubmit={handleTextSubmit} className="flex space-x-2">
-                      <input
-                        type="text"
-                        value={textInput}
-                        onChange={(e) => setTextInput(e.target.value)
-                        }
-                        placeholder="Type your message..."
-                        className="flex-1 bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-primary focus:outline-none text-sm"
-                        disabled={isPlaying}
-                      />
-                      <button
-                        type="submit"
-                        disabled={!textInput.trim() || isPlaying}
-                        className="bg-primary hover:bg-primary/80 disabled:bg-gray-600 text-white p-2 rounded transition-colors"
-                      >
-                        <Send className="w-4 h-4" />
-                      </button>
-                    </form>
-                  ) : (
-                    <div className="flex items-center justify-center">
-                      <button
-                        onClick={startVoiceRecognition}
-                        disabled={listening || isPlaying}
-                        className={`p-3 rounded-full transition-colors ${
-                          listening
-                            ? "bg-red-500 animate-pulse"
-                            : "bg-primary hover:bg-primary/80"
-                        } disabled:bg-gray-600 text-white`}
-                      >
-                        {listening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                      </button>
-                      <span className="ml-3 text-sm text-gray-300">
-                        {listening ? "Listening..." : isPlaying ? "Playing response..." : "Click to speak"}
-                      </span>
-                    </div>
-                  )}
                 </div>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </Html>
-    </>
-  );
-};
+              ))}
+            </div>
+
+            {/* Input Area */}
+            {welcomeCompleted && (
+              <div className="p-1 sm:p-4 border-t border-gray-700 flex flex-col space-y-1 sm:space-y-2">
+                {/* Mode Toggle */}
+                <div className="flex space-x-1 sm:space-x-2 mb-1 sm:mb-3">
+                  <button
+                    onClick={() => {
+                      setInputMode("text");
+                      if (recognitionRef.current) recognitionRef.current.stop();
+                      setListening(false);
+                    }}
+                    className={`flex-1 py-1 px-2 sm:py-2 sm:px-3 rounded text-xs sm:text-sm transition-colors ${
+                      inputMode === "text"
+                        ? "bg-primary text-white"
+                        : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                    }`}
+                  >
+                    Text
+                  </button>
+                  <button
+                    onClick={() => setInputMode("voice")}
+                    className={`flex-1 py-1 px-2 sm:py-2 sm:px-3 rounded text-xs sm:text-sm transition-colors ${
+                      inputMode === "voice"
+                        ? "bg-primary text-white"
+                        : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                    }`}
+                  >
+                    Voice
+                  </button>
+                </div>
+
+                {/* Input Controls */}
+                {inputMode === "text" ? (
+                  <form onSubmit={handleTextSubmit} className="flex space-x-1 sm:space-x-2">
+                    <input
+                      type="text"
+                      value={textInput}
+                      onChange={(e) => setTextInput(e.target.value)}
+                      placeholder="Type your message..."
+                      className="flex-1 bg-gray-700 text-white px-2 sm:px-3 py-1 sm:py-2 rounded border border-gray-600 focus:border-primary focus:outline-none text-xs sm:text-sm"
+                      disabled={isPlaying}
+                    />
+                    <button
+                      type="submit"
+                      disabled={!textInput.trim() || isPlaying}
+                      className="bg-primary hover:bg-primary/80 disabled:bg-gray-600 text-white p-1 sm:p-2 rounded transition-colors"
+                    >
+                      <Send className="w-3 sm:w-4 h-3 sm:h-4" />
+                    </button>
+                  </form>
+                ) : (
+                  <div className="flex items-center justify-center space-x-1 sm:space-x-2">
+                    <button
+                      onClick={startVoiceRecognition}
+                      disabled={listening || isPlaying}
+                      className={`p-2 sm:p-3 rounded-full transition-colors ${
+                        listening ? "bg-red-500 animate-pulse" : "bg-primary hover:bg-primary/80"
+                      } disabled:bg-gray-600 text-white`}
+                    >
+                      {listening ? <MicOff className="w-4 sm:w-5 h-4 sm:h-5" /> : <Mic className="w-4 sm:w-5 h-4 sm:h-5" />}
+                    </button>
+                    <span className="text-xs sm:text-sm text-gray-300">
+                      {listening ? "Listening..." : isPlaying ? "Playing response..." : "Click to speak"}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </Html>
+  </>
+);
+}
