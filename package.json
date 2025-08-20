@@ -13,7 +13,7 @@
 
   "preview": "vite preview",
 
-  "start": "node --enable-source-maps Frontend-Server/dist/Frontend-Server/index.js"
+  "start": "node dist/Frontend-Server/index.js"
   },
   "dependencies": {
     "@google-cloud/text-to-speech": "^6.2.0",
