@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "esnext",
+    "module": "ESNext",
     "moduleResolution": "node",
     "outDir": "./build/server",
     "rootDir": ".",
@@ -11,6 +11,6 @@
     "skipLibCheck": true,
     "allowJs": false
   },
-  "include": ["Frontend-Server/**/*.ts"],
+  "include": ["Frontend-Server/**/*.ts"], 
   "exclude": ["node_modules", "dist", "build"]
 }
