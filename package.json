@@ -4,13 +4,16 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "dev:server": "ts-node Frontend-Server/index.ts",
-    "build:server": "tsc -p tsconfig.build.json",
-    "start": "node Frontend-Server/dist/index.js",
-    "build:all": "npm run build && npm run build:server"
+      "dev": "vite",
+  "dev:server": "ts-node Frontend-Server/index.ts",
+
+  "build:client": "vite build",
+  "build:server": "tsc -p tsconfig.build.json",
+  "build": "npm run build:client && npm run build:server",
+
+  "preview": "vite preview",
+
+  "start": "node --enable-source-maps Frontend-Server/dist/Frontend-Server/index.js"
   },
   "dependencies": {
     "@google-cloud/text-to-speech": "^6.2.0",
