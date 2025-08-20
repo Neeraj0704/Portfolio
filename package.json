@@ -5,15 +5,15 @@
   "type": "module",
   "scripts": {
       "dev": "vite",
-  "dev:server": "ts-node Frontend-Server/index.ts",
+      "dev:server": "ts-node Frontend-Server/index.ts",
 
-  "build:client": "vite build",
-  "build:server": "tsc -p tsconfig.build.json",
-  "build": "npm run build:client && npm run build:server",
+      "build:client": "vite build",
+      "build:server": "tsc -p tsconfig.build.json",
+      "build": "npm run build:client && npm run build:server",
 
-  "preview": "vite preview",
+      "preview": "vite preview",
 
-  "start": "node dist/Frontend-Server/index.js"
+       "start": "node dist/Frontend-Server/index.js"
   },
   "dependencies": {
     "@google-cloud/text-to-speech": "^6.2.0",
