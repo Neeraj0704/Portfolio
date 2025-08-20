@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*", "shared/**/*", "Server/src/**/*", "Frontend-Server/TexttoSpeech.js", "src/components/ui/chat-panel.jsx"],
+  "include": ["src/**/*", "Frontend-Server/shared/**/*", "Server/src/**/*", "Frontend-Server/TexttoSpeech.js", "src/components/ui/chat-panel.jsx"],
   "exclude": ["node_modules", "build", "dist", "**/*.test.ts"],
   "compilerOptions": {
     "allowJs": true,
@@ -19,7 +19,7 @@
     "paths": {
       "@/*": ["src/*"],
       "@server/*": ["./Server/src/*"],
-      "@shared/*": ["shared/*"],
+      "@shared/*": ["Frontend-Server/shared/*"],
       
     }
   }
