@@ -12,6 +12,11 @@
     "allowJs": true
   },
   "include": ["Frontend-Server/**/*.ts"],
-   "exclude": ["vite.config.ts", "postcss.config.js", "tailwind.config.ts"]
-
+  "exclude": [
+    "vite.config.ts",
+    "vite.config.js",
+    "postcss.config.js",
+    "tailwind.config.ts",
+    "tailwind.config.js"
+  ]
 }
