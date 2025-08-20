@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "Frontend-Server/dist",
+    "module": "CommonJS",
+    "target": "ES2020"
+  },
+  "include": ["Frontend-Server/**/*.ts"]
+}
