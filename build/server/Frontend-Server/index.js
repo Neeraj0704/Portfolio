@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { registerRoutes } from "./routes.js";
+import { registerRoutes } from "./routes";
 const app = express();
 // Enable CORS
 app.use(cors({

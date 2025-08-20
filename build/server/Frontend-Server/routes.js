@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { queryResume, chatWithGemini } from "./llm.js"; // your Gemini + RAG logic
+import { queryResume, chatWithGemini } from "./llm"; // your Gemini + RAG logic
 import fs from "fs";
 import path from "path";
 // Register routes
