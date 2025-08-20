@@ -80,7 +80,7 @@ export default function HeroSection() {
           {/* RIGHT SIDE — INFO BUTTON + CANVAS */}
           <div className="relative w-full h-[300px] sm:h-[400px] lg:h-[500px]">
             {/* Tooltip Button Overlay */}
-            <TooltipProvider>
+            {/*<TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -99,7 +99,7 @@ export default function HeroSection() {
                   </p>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider>
+            </TooltipProvider>*/}
 
             {/* 3D Canvas */}
             
