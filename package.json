@@ -69,20 +69,26 @@
     "wouter": "^3.7.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.11",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
+    "@types/cors": "^2.8.12",
     "@types/node": "^24.3.0",
-    "@types/nodemailer": "^7.0.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "@types/nodemailer": "^6.4.7",
     "@vitejs/plugin-react": "^4.3.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2",
+    "vite": "^6.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "nodemailer": "^7.0.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/express": "^5.0.3",
     "autoprefixer": "^10.4.21",
     "globals": "^15.15.0",
     "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.17",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.2",
-    "vite": "^6.2.0"
+    "tailwindcss": "^3.4.17"
   }
 }

@@ -1,4 +1,3 @@
-// vite.config.js
 import path from "path";
 import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
@@ -10,13 +9,13 @@ const __dirname = path.dirname(__filename);
 export default defineConfig({
   plugins: [react()],
   server: {
-     proxy: {
+    proxy: {
       '/api': 'http://localhost:5000'
     }
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
+      "@": path.resolve(__dirname, "./src")
+    }
+  }
 });
