@@ -1,29 +1,29 @@
 import express from "express";
 import cors from "cors";
-import { registerRoutes } from "./routes.ts";
+import { registerRoutes } from "./routes";
 
 const app = express();
 
-// ✅ Enable CORS for frontend
+// Enable CORS
 app.use(
   cors({
-    origin: "http://localhost:5173", // frontend dev server
+    origin: "http://localhost:5173", // frontend dev server (local)
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
   })
 );
 
-// ✅ Middleware
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// ✅ Register all routes
-console.log("1");
+// Register routes
 registerRoutes(app);
 
-// ✅ Start server
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
-});
+// Use Render's PORT or fallback to 3000 locally
+const PORT: number = Number(process.env.PORT) || 3000;
 
+// ✅ Bind to 0.0.0.0 for Render
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server running at http://0.0.0.0:${PORT}`);
+});
