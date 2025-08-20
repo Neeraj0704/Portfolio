@@ -2,11 +2,10 @@
   "name": "r3f-vite-starter",
   "private": true,
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
       "dev": "vite",
       "dev:server": "ts-node Frontend-Server/index.ts",
-
+    
       "build:client": "vite build",
       "build:server": "tsc -p tsconfig.build.json",
       "build": "npm run build:client && npm run build:server",

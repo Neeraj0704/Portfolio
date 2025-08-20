@@ -1,14 +1,17 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ESNext",
+    "module": "CommonJS",
     "moduleResolution": "node",
-    "outDir": "Frontend-Server/dist",
+    "outDir": "dist/Frontend-Server",
+    "rootDir": "Frontend-Server",
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "allowJs": true
   },
-  "include": ["Frontend-Server/**/*.ts"]
+  "include": ["Frontend-Server/**/*.ts"],
+   "exclude": ["vite.config.ts", "postcss.config.js", "tailwind.config.ts"]
+
 }
