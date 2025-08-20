@@ -8,8 +8,6 @@
     "build": "vite build",
     "preview": "vite preview",
     "dev:server": "ts-node Frontend-Server/index.ts",
-    
-    
     "build:server": "tsc -p tsconfig.build.json",
     "start": "node Frontend-Server/dist/index.js",
     "build:all": "npm run build && npm run build:server"
@@ -72,8 +70,10 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.11",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/node": "^24.3.0",
+    "@types/nodemailer": "^7.0.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",

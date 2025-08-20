@@ -1,6 +1,6 @@
 import { type Express, type Request, type Response } from "express";
 import nodemailer from "nodemailer";
-import { queryResume, chatWithGemini } from "./llm.ts"; // your Gemini + RAG logic
+import { queryResume, chatWithGemini } from "./llm"; // your Gemini + RAG logic
 import fs from "fs";
 import path from "path";
 
