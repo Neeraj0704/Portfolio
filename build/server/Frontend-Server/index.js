@@ -28,7 +28,7 @@ app.use(express.urlencoded({ extended: false }));
 registerRoutes(app);
 
 // ✅ Serve frontend from dist
-const distPath = path.join(__dirname, "dist");
+const distPath = path.join(__dirname, "../../../dist");
 app.use(express.static(distPath));
 
 // ✅ Catch-all route (send index.html)
