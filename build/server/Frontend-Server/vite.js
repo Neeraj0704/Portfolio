@@ -44,7 +44,7 @@ export async function setupVite(app, server) {
   app.use(vite.middlewares);
 
   // ✅ Wildcard handler (Express 5 requires "/*")
-  app.get("/*", async (req, res, next) => {
+  app.get("/*\w", async (req, res, next) => {
     const url = req.originalUrl;
     try {
       const clientTemplate = path.resolve(__dirname, "..", "client", "index.html");
@@ -77,7 +77,7 @@ export function serveStatic(app) {
   app.use(express.static(distPath));
 
   // ✅ Use app.get("/*") instead of app.use("*")
-  app.get("/*", (_req, res) => {
+  app.get("/*\w", (_req, res) => {
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }
