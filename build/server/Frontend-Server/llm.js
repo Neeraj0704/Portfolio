@@ -48,31 +48,32 @@ export async function queryResume(queryText, topK = 5) {
 }
 
 // 🔹 Kokoro TTS directly (return buffer, no file)
-let kokoro = null;
-async function synthesizeSpeech(text) {
-    if (!kokoro) {
-        console.log("🔊 Loading Kokoro TTS model...");
-        kokoro = await KokoroTTS.from_pretrained("onnx-community/Kokoro-82M-ONNX", { dtype: "q8" });
-        console.log("✅ Kokoro TTS loaded!");
-    }
+let kokoroTTS = null;
 
-    const audio = await kokoro.generate(text, { voice: "am_puck" });
-    const audioBuffer = await audio.toBuffer(); // returns WAV buffer
-    return audioBuffer;
+async function synthesizeSpeech(text) {
+  if (!kokoroTTS) {
+    console.log("🔊 Loading Kokoro TTS model...");
+    kokoroTTS = await KokoroTTS.from_pretrained("onnx-community/Kokoro-82M-ONNX", {
+      dtype: "q8",
+    });
+    console.log("✅ Kokoro TTS loaded!");
+  }
+
+  const audio = await kokoroTTS.generate(text, { voice: "am_puck" });
+  const audioBuffer = Buffer.from(audio.data.buffer);
+  return audioBuffer;
 }
 
 // 🔹 Gemini with Native TTS
 export async function chatWithGemini(userQuery, contextDocs) {
-    if (!process.env.GEMINI_API_KEY) {
-        throw new Error("GEMINI_API_KEY not set!");
-    }
+  if (!process.env.GEMINI_API_KEY) {
+    throw new Error("GEMINI_API_KEY not set!");
+  }
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  const textModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    // 1️⃣ Gemini text model
-    const textModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-    const prompt = `You are Neeraj, an AI avatar on my portfolio website. 
+  const prompt = `You are Neeraj, an AI avatar on my portfolio website.
 Your style:
 -When asked about work-experience ignore my teching and student mentorship always
 -in my fixmyiot project i used deepseek models for openai
@@ -93,12 +94,18 @@ ${contextDocs.join("\n\n")}
 Question:
 ${userQuery}`;
 
-    const textResp = await textModel.generateContent(prompt);
-    const reply = textResp.response.text();
-    console.log("🤖 Gemini reply:", reply);
+  const textResp = await textModel.generateContent(prompt);
+  const reply = textResp.response.text();
+  console.log("🤖 Gemini reply:", reply);
 
-    // 2️⃣ Convert reply to speech with Kokoro
-    const audioFile = await synthesizeSpeech(reply);
+  // Generate TTS
+  const audioBuffer = await synthesizeSpeech(reply);
 
-    return { text: reply, audio: audioFile };
+  // Convert to base64 for frontend
+  const audioBase64 = audioBuffer.toString("base64");
+
+  return {
+    text: reply,
+    audioBase64, // 👈 matches what your React code expects
+  };
 }
