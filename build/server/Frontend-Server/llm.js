@@ -51,7 +51,7 @@ let xenovaTTS = null;
 export async function initializeTTS() {
     if (!xenovaTTS) {
         console.log("🔊 Loading Xenova TTS model...");
-        xenovaTTS = await pipeline('text-to-speech', 'Xenova/mms-tts-eng', { quantized: false });
+        xenovaTTS = await pipeline('text-to-speech', 'Xenova/mms-tts-eng', { quantized: true });
         console.log("✅ Xenova TTS loaded!");
     }
 }
