@@ -16,7 +16,7 @@ if (!process.env.PINECONE_API_KEY || !process.env.PINECONE_INDEX) {
 const pc = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
 const index = pc.Index(process.env.PINECONE_INDEX);
 
-// Embeddings
+// 🔹 Embedding model
 let embedder = null;
 async function initializeEmbedder() {
     if (!embedder) {
@@ -46,32 +46,36 @@ export async function queryResume(queryText, topK = 5) {
     return results.matches.map((m) => m.metadata?.text || "");
 }
 
-// 🔹 Xenova TTS directly (return buffer, no file)
+// 🔹 Xenova TTS model (singleton)
 let xenovaTTS = null;
-
-async function synthesizeSpeech(text) {
-  if (!xenovaTTS) {
-    console.log("🔊 Loading Xenova TTS model...");
-    xenovaTTS = await pipeline('text-to-speech', 'Xenova/mms-tts-eng', { quantized: false });
-    console.log("✅ Xenova TTS loaded!");
-  }
-
-  const output = await xenovaTTS(text);
-  // Convert Float32Array to Buffer
-  const audioBuffer = Buffer.from(output.audio.buffer);
-  return audioBuffer;
+export async function initializeTTS() {
+    if (!xenovaTTS) {
+        console.log("🔊 Loading Xenova TTS model...");
+        xenovaTTS = await pipeline('text-to-speech', 'Xenova/mms-tts-eng', { quantized: false });
+        console.log("✅ Xenova TTS loaded!");
+    }
 }
+
+export async function synthesizeSpeech(text) {
+    if (!xenovaTTS) throw new Error("Xenova TTS not initialized!");
+    const output = await xenovaTTS(text);
+    const audioBuffer = Buffer.from(output.audio.buffer);
+    return audioBuffer;
+}
+
+// Initialize TTS at server startup
+await initializeTTS();
 
 // 🔹 Gemini with Native TTS
 export async function chatWithGemini(userQuery, contextDocs) {
-  if (!process.env.GEMINI_API_KEY) {
-    throw new Error("GEMINI_API_KEY not set!");
-  }
+    if (!process.env.GEMINI_API_KEY) {
+        throw new Error("GEMINI_API_KEY not set!");
+    }
 
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const textModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const textModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-  const prompt = `You are Neeraj, an AI avatar on my portfolio website.
+    const prompt = `You are Neeraj, an AI avatar on my portfolio website.
 Your style:
 -When asked about work-experience ignore my teching and student mentorship always
 -in my fixmyiot project i used deepseek models for openai
@@ -92,18 +96,18 @@ ${contextDocs.join("\n\n")}
 Question:
 ${userQuery}`;
 
-  const textResp = await textModel.generateContent(prompt);
-  const reply = textResp.response.text();
-  console.log("🤖 Gemini reply:", reply);
+    const textResp = await textModel.generateContent(prompt);
+    const reply = textResp.response.text();
+    console.log("🤖 Gemini reply:", reply);
 
-  // Generate TTS using Xenova
-  const audioBuffer = await synthesizeSpeech(reply);
+    // Generate TTS using Xenova
+    const audioBuffer = await synthesizeSpeech(reply);
 
-  // Convert to base64 for frontend
-  const audioBase64 = audioBuffer.toString("base64");
+    // Convert to base64 for frontend
+    const audioBase64 = audioBuffer.toString("base64");
 
-  return {
-    text: reply,
-    audioBase64, // 👈 matches what your React code expects
-  };
+    return {
+        text: reply,
+        audioBase64,
+    };
 }
