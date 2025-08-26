@@ -3,8 +3,7 @@ import { Avatar } from "./Avatar";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, MicOff, Send, MessageCircle, X } from "lucide-react";
-import { useMediaQuery } from "react-responsive";
-import { pipeline } from "@xenova/transformers";
+import { useMediaQuery } from 'react-responsive';
 
 export const Experience = () => {
   const [chatStarted, setChatStarted] = useState(false);
@@ -16,44 +15,36 @@ export const Experience = () => {
   const [inputMode, setInputMode] = useState("text"); // "text" or "voice"
   const [textInput, setTextInput] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
+  const [isTyping, setIsTyping]= useState(false);
   const [welcomeCompleted, setWelcomeCompleted] = useState(false);
-  const [ttsPipe, setTtsPipe] = useState(null); // Kokoro pipeline
   const recognitionRef = useRef(null);
   const speechTimeoutRef = useRef(null);
   const chatContainerRef = useRef(null);
   const currentAudioRef = useRef(null);
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const isMobile = useMediaQuery({ maxWidth: 768 }); // Adjust breakpoint as needed
 
-  // Scroll chat to bottom
-  const scrollToBottom = () => {
-    if (chatContainerRef.current) {
-      setTimeout(() => {
-        chatContainerRef.current.scrollTo({
-          top: chatContainerRef.current.scrollHeight,
-          behavior: 'smooth',
-        });
-      }, 500);
-    }
-  };
-  useEffect(() => scrollToBottom(), [messages]);
+ const scrollToBottom = () => {
+  if (chatContainerRef.current) {
+    setTimeout(() => {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }, 500); // 👈 close setTimeout with a delay (0 ms if you want instant)
+  }
+};
 
-  // Initialize Kokoro TTS frontend pipeline
   useEffect(() => {
-    const loadTTS = async () => {
-      const pipe = await pipeline("text-to-speech", "onnx-community/Kokoro-82M-v1.0-ONNX");
-      setTtsPipe(pipe);
-    };
-    loadTTS();
-  }, []);
+    scrollToBottom();
+  }, [messages]);
 
-  // Initialize Speech Recognition
   const initRecognition = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       alert("Speech Recognition not supported in this browser.");
       return null;
     }
+
     const recognition = new SpeechRecognition();
     recognition.lang = "en-US";
     recognition.interimResults = false;
@@ -61,7 +52,7 @@ export const Experience = () => {
     recognition.continuous = false;
 
     recognition.onstart = () => setListening(true);
-
+    
     recognition.onresult = async (event) => {
       const transcript = event.results[event.results.length - 1][0].transcript;
       setListening(false);
@@ -73,77 +64,88 @@ export const Experience = () => {
       setListening(false);
     };
 
-    recognition.onend = () => setListening(false);
+    recognition.onend = () => {
+      // Stop recognition completely; will restart manually
+     setListening(false);
+    };
+
     return recognition;
   };
 
-  // Handle user input and AI response
   const handleUserInput = async (input) => {
-    if (!input.trim()) return;
-    setMessages((prev) => [...prev, { type: "user", text: input }]);
-    const waitMessage = { type: "ai", text: "Thinking..." };
-    setMessages((prev) => [...prev, waitMessage]);
+  if (!input.trim()) return;
 
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: input }),
-      });
-      const data = await response.json();
-      const replyText = data.text || "Sorry, I couldn't get a response.";
+  // Add user message
+  setMessages((prev) => [...prev, { type: "user", text: input }]);
 
-      // Replace placeholder with actual reply
-      setMessages((prev) => [
-        ...prev.filter((msg) => msg !== waitMessage),
-        { type: "ai", text: replyText },
-      ]);
+  // Placeholder for AI
+  const waitMessage = { type: "ai", text: "Thinking..." };
+  setMessages((prev) => [...prev, waitMessage]);
 
-      // Stop previous audio
-      if (currentAudioRef.current) {
-        currentAudioRef.current.pause();
-        URL.revokeObjectURL(currentAudioRef.current.src);
-        currentAudioRef.current = null;
-      }
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: input }),
+    });
 
-      // Play TTS using frontend Kokoro
-      if (ttsPipe) {
-        setTriggerTalking(true);
-        setIsPlaying(true);
+    const data = await response.json();
+    const replyText = data.text || "Sorry, I couldn't get a response.";
 
-        const audioData = await ttsPipe(replyText);
-        const audioBlob = new Blob([audioData], { type: "audio/wav" });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
-        currentAudioRef.current = audio;
+    // Replace placeholder with actual reply
+    setMessages((prev) => [
+      ...prev.filter((msg) => msg !== waitMessage),
+      { type: "ai", text: replyText },
+    ]);
 
-        audio.play();
-        audio.onended = () => {
-          setTriggerTalking(false);
-          setIsPlaying(false);
+    // Stop previous audio if any
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      URL.revokeObjectURL(currentAudioRef.current.src);
+      currentAudioRef.current = null;
+    }
 
-          // Restart voice recognition if in voice mode
-          if (inputMode === "voice" && !listening) {
-            if (speechTimeoutRef.current) clearTimeout(speechTimeoutRef.current);
-            speechTimeoutRef.current = setTimeout(() => {
-              startVoiceRecognition();
-            }, 500);
-          }
-        };
-      } else {
+    // Play TTS if available
+    if (data.audioBase64) {
+      setTriggerTalking(true);
+      setIsPlaying(true);
+
+      const audioBlob = new Blob(
+        [Uint8Array.from(atob(data.audioBase64), (c) => c.charCodeAt(0))],
+        { type: "audio/wav" }
+      );
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      currentAudioRef.current = audio;
+
+      audio.play();
+      audio.onended = () => {
         setTriggerTalking(false);
         setIsPlaying(false);
-      }
-    } catch (err) {
-      console.error("Backend error:", err);
-      setMessages((prev) => [
-        ...prev.filter((msg) => msg !== waitMessage),
-        { type: "ai", text: "Sorry, I encountered an error. Please try again." },
-      ]);
+
+        // Restart voice recognition if in voice mode
+        if (inputMode === "voice" && !listening) {
+          if (speechTimeoutRef.current) clearTimeout(speechTimeoutRef.current);
+          speechTimeoutRef.current = setTimeout(() => {
+            startVoiceRecognition();
+          }, 500);
+        }
+      };
+    } else {
       setTriggerTalking(false);
       setIsPlaying(false);
     }
-  };
+  } catch (err) {
+    console.error("Backend error:", err);
+    setMessages((prev) => [
+      ...prev.filter((msg) => msg !== waitMessage),
+      { type: "ai", text: "Sorry, I encountered an error. Please try again." },
+    ]);
+    setTriggerTalking(false);
+    setIsPlaying(false);
+  }
+};
+
 
   const handleTextSubmit = (e) => {
     e.preventDefault();
@@ -160,40 +162,37 @@ export const Experience = () => {
     }
   };
 
-  // Play welcome message using frontend TTS
-  const playWelcomeMessage = async () => {
-    const welcomeText =
-      "Hello! I'm Neeraj's AI avatar. I can tell you about his experience, projects, and skills. You can either type your questions or use voice input. How can I help you today?";
+  const playWelcomeMessage = () => {
+    // You can replace this with your actual welcome audio file
+    const welcomeText = "Hello! I'm Neeraj's AI avatar. I can tell you about his experience, projects, and skills. You can either type your questions or use voice input. How can I help you today?";
+    
     setMessages([{ type: 'ai', text: welcomeText }]);
+    
     setTriggerGreeting(true);
-    setTimeout(() => setTriggerGreeting(false), 6000);
+    setTimeout(() => {
+    setTriggerGreeting(false);
     setTriggerSalute(true);
+  }, 6000);
+    //setTriggerSalute(true);
     setIsPlaying(true);
 
-    if (ttsPipe) {
-      const audioData = await ttsPipe(welcomeText);
-      const audioBlob = new Blob([audioData], { type: "audio/wav" });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-      currentAudioRef.current = audio;
+  const audio = new Audio("/audio/Welcome.wav"); // your .wav file
+  currentAudioRef.current = audio;
+  audio.play();
 
-      audio.play();
-      audio.onended = () => {
-        setTriggerTalking(false);
-        setTriggerSalute(false);
-        setTriggerGreeting(false);
-        setIsPlaying(false);
-        setWelcomeCompleted(true);
-      };
-    } else {
-      setIsPlaying(false);
-      setWelcomeCompleted(true);
-    }
+  // When audio finishes, stop talking & salute animations
+  audio.onended = () => {
+    setTriggerTalking(false);
+    setTriggerSalute(false);
+    setTriggerGreeting(false);
+    setIsPlaying(false);
+    setWelcomeCompleted(true);
   };
+};
 
   const handleChatClick = () => {
     setChatStarted(true);
-    playWelcomeMessage();
+    playWelcomeMessage();  
   };
 
   const handleBackClick = () => {
