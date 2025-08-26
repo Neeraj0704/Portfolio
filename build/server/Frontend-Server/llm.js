@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import { pipeline } from "@xenova/transformers";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { KokoroTTS } from "kokoro-js";
 
 dotenv.config();
 
@@ -47,20 +46,19 @@ export async function queryResume(queryText, topK = 5) {
     return results.matches.map((m) => m.metadata?.text || "");
 }
 
-// 🔹 Kokoro TTS directly (return buffer, no file)
-let kokoroTTS = null;
+// 🔹 Xenova TTS directly (return buffer, no file)
+let xenovaTTS = null;
 
 async function synthesizeSpeech(text) {
-  if (!kokoroTTS) {
-    console.log("🔊 Loading Kokoro TTS model...");
-    kokoroTTS = await KokoroTTS.from_pretrained("onnx-community/Kokoro-82M-ONNX", {
-      dtype: "q8",
-    });
-    console.log("✅ Kokoro TTS loaded!");
+  if (!xenovaTTS) {
+    console.log("🔊 Loading Xenova TTS model...");
+    xenovaTTS = await pipeline('text-to-speech', 'Xenova/mms-tts-eng', { quantized: false });
+    console.log("✅ Xenova TTS loaded!");
   }
 
-  const audio = await kokoroTTS.generate(text, { voice: "am_puck" });
-  const audioBuffer = Buffer.from(audio.data.buffer);
+  const output = await xenovaTTS(text);
+  // Convert Float32Array to Buffer
+  const audioBuffer = Buffer.from(output.audio.buffer);
   return audioBuffer;
 }
 
@@ -98,7 +96,7 @@ ${userQuery}`;
   const reply = textResp.response.text();
   console.log("🤖 Gemini reply:", reply);
 
-  // Generate TTS
+  // Generate TTS using Xenova
   const audioBuffer = await synthesizeSpeech(reply);
 
   // Convert to base64 for frontend
