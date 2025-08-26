@@ -47,14 +47,14 @@ export async function queryResume(queryText, topK = 5) {
 }
 
 // 🔹 Xenova TTS model (singleton)
-let xenovaTTS = null;
-export async function initializeTTS() {
-    if (!xenovaTTS) {
-        console.log("🔊 Loading Xenova TTS model...");
-        xenovaTTS = await pipeline('text-to-speech', 'Xenova/mms-tts-eng', { quantized: true });
-        console.log("✅ Xenova TTS loaded!");
-    }
-}
+//let xenovaTTS = null;
+//export async function initializeTTS() {
+    //if (!xenovaTTS) {
+        //console.log("🔊 Loading Xenova TTS model...");
+        //xenovaTTS = await pipeline('text-to-speech', 'Xenova/mms-tts-eng', { quantized: true });
+        //console.log("✅ Xenova TTS loaded!");
+    //}
+//}
 
 export async function synthesizeSpeech(text) {
     if (!xenovaTTS) throw new Error("Xenova TTS not initialized!");
@@ -64,7 +64,7 @@ export async function synthesizeSpeech(text) {
 }
 
 // Initialize TTS at server startup
-await initializeTTS();
+//await initializeTTS();
 
 // 🔹 Gemini with Native TTS
 export async function chatWithGemini(userQuery, contextDocs) {
@@ -101,13 +101,12 @@ ${userQuery}`;
     console.log("🤖 Gemini reply:", reply);
 
     // Generate TTS using Xenova
-    const audioBuffer = await synthesizeSpeech(reply);
+    //const audioBuffer = await synthesizeSpeech(reply);
 
     // Convert to base64 for frontend
-    const audioBase64 = audioBuffer.toString("base64");
+    //const audioBase64 = audioBuffer.toString("base64");
 
     return {
-        text: reply,
-        audioBase64,
+        text: reply
     };
 }

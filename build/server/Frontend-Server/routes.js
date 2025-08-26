@@ -66,8 +66,7 @@ export function registerRoutes(app) {
             }
             // 4️⃣ Send back text + audio (base64)
             res.json({
-                text,
-                audioBase64: audio?.toString("base64"),
+                text
             });
         }
         catch (err) {
