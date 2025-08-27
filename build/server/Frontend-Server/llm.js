@@ -13,8 +13,8 @@ dotenv.config();
 if (!process.env.PINECONE_API_KEY || !process.env.PINECONE_INDEX) {
     throw new Error("Missing Pinecone environment variables");
 }
-if (!process.env.TEXT_TO_SPEECH_API) {
-    throw new Error("TEXT_TO_SPEECH_API not set!");
+if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
+    throw new Error("Missing Google Cloud Service Account JSON in env!");
 }
 
 // Initialize Pinecone
@@ -51,14 +51,13 @@ export async function queryResume(queryText, topK = 5) {
     return results.matches.map((m) => m.metadata?.text || "");
 }
 
-// 🔹 Google Cloud TTS client (singleton)
+// 🔹 Google Cloud TTS client (singleton using Service Account)
 let gcpTTS = null;
 export async function initializeTTS() {
     if (!gcpTTS) {
         console.log("🔊 Initializing Google Cloud TTS...");
-        gcpTTS = new textToSpeech.TextToSpeechClient({
-            apiKey: process.env.TEXT_TO_SPEECH_API,
-        });
+        const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
+        gcpTTS = new textToSpeech.TextToSpeechClient({ credentials });
         console.log("✅ Google Cloud TTS ready!");
     }
 }
