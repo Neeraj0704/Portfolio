@@ -2,13 +2,8 @@ import textToSpeech from "@google-cloud/text-to-speech";
 import fs from "fs";
 import util from "util";
 
-// Load your API key from environment variable
-const apiKey = process.env.TEXT_TO_SPEECH_API;
-
-// Create the client with the API key
-const client = new textToSpeech.TextToSpeechClient({
-  key: apiKey,
-});
+// Create the client (will auto-read GOOGLE_APPLICATION_CREDENTIALS env var)
+const client = new textToSpeech.TextToSpeechClient();
 
 async function synthesizeSpeech() {
   const request = {
