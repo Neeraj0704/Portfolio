@@ -13,8 +13,8 @@ dotenv.config();
 if (!process.env.PINECONE_API_KEY || !process.env.PINECONE_INDEX) {
     throw new Error("Missing Pinecone environment variables");
 }
-if (!process.env.TEXT_TO_SPEECH_API) {
-    throw new Error("TEXT_TO_SPEECH_API not set!");
+if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    throw new Error("GOOGLE_APPLICATION_CREDENTIALS not set! Make sure it's pointing to your /etc/secrets/tts-key.json on Render.");
 }
 
 // Initialize Pinecone
@@ -55,10 +55,8 @@ export async function queryResume(queryText, topK = 5) {
 let gcpTTS = null;
 export async function initializeTTS() {
     if (!gcpTTS) {
-        console.log("🔊 Initializing Google Cloud TTS...");
-        gcpTTS = new textToSpeech.TextToSpeechClient({
-            apiKey: process.env.TEXT_TO_SPEECH_API,
-        });
+        console.log("🔊 Initializing Google Cloud TTS with Service Account...");
+        gcpTTS = new textToSpeech.TextToSpeechClient(); // auto-loads creds from GOOGLE_APPLICATION_CREDENTIALS
         console.log("✅ Google Cloud TTS ready!");
     }
 }
@@ -73,8 +71,7 @@ export async function synthesizeSpeech(text) {
     };
 
     const [response] = await gcpTTS.synthesizeSpeech(request);
-    const audioBuffer = Buffer.from(response.audioContent, "base64");
-    return audioBuffer;
+    return Buffer.from(response.audioContent, "base64");
 }
 
 // Initialize TTS at server startup
@@ -91,16 +88,16 @@ export async function chatWithGemini(userQuery, contextDocs) {
 
     const prompt = `You are Neeraj, an AI avatar on my portfolio website.
 Your style:
--When asked about work-experience ignore my teching and student mentorship always
--in my fixmyiot project i used deepseek models for openai
-- Speak in first person ("I", "me") 
+- When asked about work-experience ignore my teching and student mentorship always
+- In my fixmyiot project I used Deepseek models for OpenAI
+- Speak in first person ("I", "me")
 - Be concise: 2-3 sentences max IN THE RESPONSE AND IT SHOULD BE COMPLETE THIS IS SHOULD BE FOLLOWED STRICTLY
-- If the user gives their name, use it naturally in future replies  
-- If the user asks about your projects, always start by highlighting your "FixMyIoT" project. 
-- Come up with a funny answer if the user asks about your favorite food or color and also if they ask about hobbies tell i like cricket and football(soccer) but frame it in a proper and complete sentence.
+- If the user gives their name, use it naturally in future replies
+- If the user asks about your projects, always start by highlighting your "FixMyIoT" project.
+- Come up with a funny answer if the user asks about your favorite food or color and also if they ask about hobbies tell I like cricket and football (soccer) but frame it in a proper and complete sentence.
 - Do not include * in any answer
 - If the user asks about unrelated stuff (politics, celebrities, news), reply: "I don’t have that information. Sorry!"
--Example: for length of response STRICTLY FOLLOW THE LENGTH 
+- Example: for length of response STRICTLY FOLLOW THE LENGTH
 User: "Tell me about your FixMyIoT project."
 Neeraj: "FixMyIoT is an AI-powered assistant I built to troubleshoot smart devices using Deepseek models. It guides users with step-by-step solutions through a simple web app with secure login and responsive design."
 
@@ -114,14 +111,11 @@ ${userQuery}`;
     const reply = textResp.response.text();
     console.log("🤖 Gemini reply:", reply);
 
-    // Generate TTS using Google Cloud
+    // Generate TTS audio
     const audioBuffer = await synthesizeSpeech(reply);
-
-    // Convert to base64 for frontend
-    const audioBase64 = audioBuffer.toString("base64");
 
     return {
         text: reply,
-        audioBase64,
+        audioBase64: audioBuffer.toString("base64"),
     };
 }

@@ -1,24 +1,28 @@
-// test.js
-import { KokoroTTS } from "kokoro-js";
+import textToSpeech from "@google-cloud/text-to-speech";
 import fs from "fs";
+import util from "util";
 
-async function main() {
-  const [text, outFile] = process.argv.slice(2);
+// Load your API key from environment variable
+const apiKey = process.env.TEXT_TO_SPEECH_API;
 
-  if (!text || !outFile) {
-    console.error("Usage: node test.js <text> <outFile>");
-    process.exit(1);
-  }
+// Create the client with the API key
+const client = new textToSpeech.TextToSpeechClient({
+  key: apiKey,
+});
 
-  const model_id = "onnx-community/Kokoro-82M-ONNX";
-  const tts = await KokoroTTS.from_pretrained(model_id, { dtype: "q8" });
+async function synthesizeSpeech() {
+  const request = {
+    input: { text: "Hello Neeraj, this is Google Cloud Text-to-Speech in action!" },
+    voice: { languageCode: "en-US", ssmlGender: "NEUTRAL" },
+    audioConfig: { audioEncoding: "MP3" },
+  };
 
-  // 👇 fixed voice: am_michael
-  const audio = await tts.generate(text, { voice: "am_puck" });
-  await audio.save(outFile);
+  const [response] = await client.synthesizeSpeech(request);
 
-  // Print the file path so llm.ts can grab it
-  console.log(outFile);
+  // Save audio file
+  const writeFile = util.promisify(fs.writeFile);
+  await writeFile("output.mp3", response.audioContent, "binary");
+  console.log("✅ Audio content written to file: output.mp3");
 }
 
-main();
+synthesizeSpeech().catch(console.error);
