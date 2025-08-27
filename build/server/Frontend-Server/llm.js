@@ -4,12 +4,17 @@ import dotenv from "dotenv";
 import { pipeline } from "@xenova/transformers";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import textToSpeech from "@google-cloud/text-to-speech";
+import fs from "fs";
 
 dotenv.config();
 
 // 🔹 Validate env vars first
 if (!process.env.PINECONE_API_KEY || !process.env.PINECONE_INDEX) {
     throw new Error("Missing Pinecone environment variables");
+}
+if (!process.env.TEXT_TO_SPEECH_API) {
+    throw new Error("TEXT_TO_SPEECH_API not set!");
 }
 
 // Initialize Pinecone
@@ -46,27 +51,36 @@ export async function queryResume(queryText, topK = 5) {
     return results.matches.map((m) => m.metadata?.text || "");
 }
 
-// 🔹 Xenova TTS model (singleton)
-let xenovaTTS = null;
+// 🔹 Google Cloud TTS client (singleton)
+let gcpTTS = null;
 export async function initializeTTS() {
-    if (!xenovaTTS) {
-        console.log("🔊 Loading Xenova TTS model...");
-        xenovaTTS = await pipeline('text-to-speech', 'Xenova/mms-tts-eng', { quantized: true });
-        console.log("✅ Xenova TTS loaded!");
+    if (!gcpTTS) {
+        console.log("🔊 Initializing Google Cloud TTS...");
+        gcpTTS = new textToSpeech.TextToSpeechClient({
+            apiKey: process.env.TEXT_TO_SPEECH_API,
+        });
+        console.log("✅ Google Cloud TTS ready!");
     }
 }
 
 export async function synthesizeSpeech(text) {
-    if (!xenovaTTS) throw new Error("Xenova TTS not initialized!");
-    const output = await xenovaTTS(text);
-    const audioBuffer = Buffer.from(output.audio.buffer);
+    if (!gcpTTS) throw new Error("Google Cloud TTS not initialized!");
+
+    const request = {
+        input: { text },
+        voice: { languageCode: "en-US", ssmlGender: "NEUTRAL" },
+        audioConfig: { audioEncoding: "MP3" },
+    };
+
+    const [response] = await gcpTTS.synthesizeSpeech(request);
+    const audioBuffer = Buffer.from(response.audioContent, "base64");
     return audioBuffer;
 }
 
 // Initialize TTS at server startup
 await initializeTTS();
 
-// 🔹 Gemini with Native TTS
+// 🔹 Gemini with TTS output
 export async function chatWithGemini(userQuery, contextDocs) {
     if (!process.env.GEMINI_API_KEY) {
         throw new Error("GEMINI_API_KEY not set!");
@@ -100,7 +114,7 @@ ${userQuery}`;
     const reply = textResp.response.text();
     console.log("🤖 Gemini reply:", reply);
 
-    // Generate TTS using Xenova
+    // Generate TTS using Google Cloud
     const audioBuffer = await synthesizeSpeech(reply);
 
     // Convert to base64 for frontend
