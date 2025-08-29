@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import { pipeline } from "@xenova/transformers";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import textToSpeech from "@google-cloud/text-to-speech";
 import fs from "fs";
 
 dotenv.config();
@@ -13,8 +12,11 @@ dotenv.config();
 if (!process.env.PINECONE_API_KEY || !process.env.PINECONE_INDEX) {
     throw new Error("Missing Pinecone environment variables");
 }
-if (!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
-    throw new Error("Missing Google Cloud Service Account JSON in env!");
+if (!process.env.TEXT_TO_SPEECH_API) {
+    throw new Error("Missing GOOGLE_TTS_API_KEY in env!");
+}
+if (!process.env.GEMINI_API_KEY) {
+    throw new Error("Missing GEMINI_API_KEY in env!");
 }
 
 // Initialize Pinecone
@@ -51,55 +53,46 @@ export async function queryResume(queryText, topK = 5) {
     return results.matches.map((m) => m.metadata?.text || "");
 }
 
-// 🔹 Google Cloud TTS client (singleton using Service Account)
-let gcpTTS = null;
-export async function initializeTTS() {
-    if (!gcpTTS) {
-        console.log("🔊 Initializing Google Cloud TTS...");
-        const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
-        gcpTTS = new textToSpeech.TextToSpeechClient({ credentials });
-        console.log("✅ Google Cloud TTS ready!");
-    }
-}
-
+// 🔹 Google Cloud TTS (API key only, REST call)
 export async function synthesizeSpeech(text) {
-    if (!gcpTTS) throw new Error("Google Cloud TTS not initialized!");
+    const response = await fetch(
+        `https://texttospeech.googleapis.com/v1/text:synthesize?key=${process.env.TEXT_TO_SPEECH_API}`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                input: { text },
+                voice: { languageCode: "en-US", ssmlGender: "NEUTRAL" },
+                audioConfig: { audioEncoding: "MP3" },
+            }),
+        }
+    );
 
-    const request = {
-        input: { text },
-        voice: { languageCode: "en-US", ssmlGender: "NEUTRAL" },
-        audioConfig: { audioEncoding: "MP3" },
-    };
+    if (!response.ok) {
+        throw new Error(`TTS API request failed: ${response.statusText}`);
+    }
 
-    const [response] = await gcpTTS.synthesizeSpeech(request);
-    const audioBuffer = Buffer.from(response.audioContent, "base64");
-    return audioBuffer;
+    const data = await response.json();
+    return Buffer.from(data.audioContent, "base64");
 }
-
-// Initialize TTS at server startup
-await initializeTTS();
 
 // 🔹 Gemini with TTS output
 export async function chatWithGemini(userQuery, contextDocs) {
-    if (!process.env.GEMINI_API_KEY) {
-        throw new Error("GEMINI_API_KEY not set!");
-    }
-
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const textModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `You are Neeraj, an AI avatar on my portfolio website.
 Your style:
--When asked about work-experience ignore my teching and student mentorship always
--in my fixmyiot project i used deepseek models for openai
+- When asked about work-experience ignore my teaching and student mentorship always
+- In my FixMyIoT project I used Deepseek models for OpenAI
 - Speak in first person ("I", "me") 
 - Be concise: 2-3 sentences max IN THE RESPONSE AND IT SHOULD BE COMPLETE THIS IS SHOULD BE FOLLOWED STRICTLY
 - If the user gives their name, use it naturally in future replies  
 - If the user asks about your projects, always start by highlighting your "FixMyIoT" project. 
-- Come up with a funny answer if the user asks about your favorite food or color and also if they ask about hobbies tell i like cricket and football(soccer) but frame it in a proper and complete sentence.
+- Come up with a funny answer if the user asks about your favorite food or color and also if they ask about hobbies tell I like cricket and football(soccer) but frame it in a proper and complete sentence.
 - Do not include * in any answer
 - If the user asks about unrelated stuff (politics, celebrities, news), reply: "I don’t have that information. Sorry!"
--Example: for length of response STRICTLY FOLLOW THE LENGTH 
+- Example: for length of response STRICTLY FOLLOW THE LENGTH 
 User: "Tell me about your FixMyIoT project."
 Neeraj: "FixMyIoT is an AI-powered assistant I built to troubleshoot smart devices using Deepseek models. It guides users with step-by-step solutions through a simple web app with secure login and responsive design."
 
@@ -113,7 +106,7 @@ ${userQuery}`;
     const reply = textResp.response.text();
     console.log("🤖 Gemini reply:", reply);
 
-    // Generate TTS using Google Cloud
+    // Generate TTS using Google Cloud API Key
     const audioBuffer = await synthesizeSpeech(reply);
 
     // Convert to base64 for frontend
