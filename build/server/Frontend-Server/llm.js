@@ -62,7 +62,7 @@ export async function synthesizeSpeech(text) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 input: { text },
-                voice: { languageCode: "en-US", ssmlGender: "NEUTRAL" },
+                voice: { languageCode: "en-US", ssmlGender: "MALE" },
                 audioConfig: { audioEncoding: "MP3" },
             }),
         }
