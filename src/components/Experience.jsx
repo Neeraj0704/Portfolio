@@ -212,7 +212,7 @@ export const Experience = () => {
         style={{
           position: "fixed",
           top: "50%",
-          left: "20px",
+          left: isMobile? "5px":"20px",
           transform: "translateY(-50%)",
           zIndex: 10,
           pointerEvents: "auto",
