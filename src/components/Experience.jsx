@@ -192,7 +192,7 @@ export const Experience = () => {
   return (
     <>
       {!chatStarted && (
-        <OrbitControls enableZoom={false} enablePan={false} />
+        <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} />
       )}
 
       <Avatar
