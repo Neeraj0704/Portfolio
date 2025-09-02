@@ -293,32 +293,17 @@ export const Experience = () => {
               </div>
 
               {/* Input Area */}
-              <div className="p-1 sm:p-4 border-t border-gray-700 flex flex-col space-y-2 sm:space-y-3">
-                {/* Initial Prompts */}
-                {showPrompts && inputMode === "text" && (
-                  <div className="flex flex-col items-center space-y-2">
-                    <button
-                      onClick={() => handleUserInput("Share Neeraj's experience")}
-                      className="px-3 py-1 bg-gray-700 hover:bg-primary text-white text-xs sm:text-sm rounded-full transition-colors"
-                    >
-                      Share Neeraj's experience
-                    </button>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleUserInput("Tell me about Neeraj's projects")}
-                        className="px-2 py-1 bg-gray-700 hover:bg-primary text-white text-xs sm:text-sm rounded-full transition-colors"
-                      >
-                        Tell me about Neeraj's projects
-                      </button>
-                      <button
-                        onClick={() => handleUserInput("What are Neeraj's skills?")}
-                        className="px-2 py-1 bg-gray-700 hover:bg-primary text-white text-xs sm:text-sm rounded-full transition-colors"
-                      >
-                        What are Neeraj's skills?
-                      </button>
-                    </div>
-                  </div>
-                )}
+              {/* Input Area */}
+<div className="p-1 sm:p-4 border-t border-gray-700 flex flex-col space-y-2 sm:space-y-3">
+  {/* Initial Prompts */}
+  {showPrompts && inputMode === "text" && (
+    <div className="flex flex-col items-center space-y-1 text-xs sm:text-sm text-gray-300">
+      <span>💡 Suggested things to type:</span>
+      <span>"Share Neeraj's experience"</span>
+      <span>"Tell me about Neeraj's projects"</span>
+      <span>"What are Neeraj's skills?"</span>
+    </div>
+  )}
 
                 {/* Voice Suggestions */}
                 {showVoiceSuggestions && inputMode === "voice" && (
