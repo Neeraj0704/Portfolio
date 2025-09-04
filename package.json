@@ -50,6 +50,7 @@
     "input-otp": "^1.4.2",
     "kokoro-js": "^1.2.1",
     "lucide-react": "^0.541.0",
+    "node-cron": "^4.2.1",
     "node-fetch": "^3.3.2",
     "nodemailer": "^7.0.5",
     "onnxruntime-web": "^1.22.0",
