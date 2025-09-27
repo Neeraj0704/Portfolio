@@ -43,8 +43,8 @@ export default function Navigation() {
 
   const downloadResume = () => {
     const link = document.createElement("a");
-    link.href = "/Server/src/Data/NEERAJ V PATTANASHETTI_RESUME.pdf";
-    link.download = "Neeraj_V_Pattanashetti_Resume.pdf";
+    link.href = "/NEERAJ_V_PATTANASHETTI_RESUME.pdf";
+    link.download = "/NEERAJ_V_PATTANASHETTI_RESUME.pdf";
     link.click();
   };
 
