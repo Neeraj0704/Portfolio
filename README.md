@@ -1,12 +1,58 @@
-# React + Vite
+# Neeraj V. Pattanashetti – Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to my personal portfolio repository! 
 
-Currently, two official plugins are available:
+## 🚀 Project Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This portfolio site serves as a digital showcase of my work, featuring:
 
-## Expanding the ESLint configuration
+- **Interactive UI**: Built with React.js and styled using Tailwind CSS.
+- **AI Integration**: Utilizes Google’s **Gemini API** for conversational responses, Text-to-Speech (TTS), and Speech-to-Text (STT) functionalities.
+- **Resume Download**: Allows visitors to download my resume directly.
+- **Project Showcases**: Highlights various projects with detailed descriptions and technologies used.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🔧 Technologies Used
+
+- **Frontend**: React.js, Tailwind CSS, TypeScript
+- **Backend / Deployment**: Vercel, Render
+- **AI Integration**: Google Gemini API (Conversational AI, TTS, STT)
+- **Other Tools**: Vite, ESLint, Prettier
+
+## 🌐 Live Portfolio
+
+Experience the live version of my portfolio at:  
+🔗 [https://neeraj-v-p.onrender.com/](https://neeraj-v-p.onrender.com/)
+
+## 📁 Project Structure
+
+/public
+/assets
+/images
+/audio
+/NEERAJ_V_PATTANASHETTI_RESUME.pdf
+/src
+/components
+/pages
+/styles
+/utils
+.gitignore
+README.md
+package.json
+tailwind.config.js
+vite.config.ts
+
+less
+Copy code
+
+## 📄 Resume
+
+You can download my resume directly from the website or access it here:  
+
+🔗 [NEERAJ_V_PATTANASHETTI_RESUME.pdf](https://github.com/Neeraj0704/Portfolio/raw/main/public/NEERAJ_V_PATTANASHETTI_RESUME.pdf)
+
+## 📬 Contact
+
+Feel free to reach out:  
+
+- **Email**: [neerajvpattanashetti@gmail.com](mailto:neerajvpattanashetti@gmail.com)  
+- **LinkedIn**: [https://www.linkedin.com/in/neeraj-vijayakumar-pattanashetti-613305239/]
