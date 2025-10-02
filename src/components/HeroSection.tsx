@@ -5,6 +5,7 @@ import { Experience } from "./Experience";
 import { motion } from "framer-motion";
 import { useIsMobile } from "../hooks/use-mobile";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "./ui/tooltip";
+import { Suspense } from "react";
 
 export default function HeroSection() {
   const isMobile = useIsMobile();
@@ -111,6 +112,7 @@ export default function HeroSection() {
               }}
               className="w-full h-full"
             >
+               <Suspense fallback={<div className="text-center">Loading avatar...</div>}>
               <Experience />
             </Canvas>
           </div>
