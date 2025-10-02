@@ -80,30 +80,7 @@ export default function HeroSection() {
 
           {/* RIGHT SIDE — INFO BUTTON + CANVAS */}
           <div className="relative w-full h-[300px] sm:h-[400px] lg:h-[500px]">
-            {/* Tooltip Button Overlay */}
-            {/*<TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="absolute top-2 left-2 text-muted-foreground hover:text-primary "
-                  >
-                    INFO
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent className="">
-                  <p>
-                    Best viewed on desktop.<br />
-                    Expect some latency.<br />
-                    Apologies for the inconvenience!
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>*/}
-
             {/* 3D Canvas */}
-            
             <Canvas 
               shadows 
               camera={{ 
@@ -112,8 +89,9 @@ export default function HeroSection() {
               }}
               className="w-full h-full"
             >
-               <Suspense fallback={<div className="text-center">Loading avatar...</div>}>
-              <Experience />
+              <Suspense fallback={<div className="text-center">Loading avatar...</div>}>
+                <Experience />
+              </Suspense>
             </Canvas>
           </div>
         </div>
