@@ -1,4 +1,4 @@
-# Neeraj V. Pattanashetti – Portfolio
+# Neeraj Vijayakumar Pattanashetti – Portfolio
 
 Welcome to my personal portfolio repository! 
 
@@ -14,7 +14,7 @@ This portfolio site serves as a digital showcase of my work, featuring:
 ## 🔧 Technologies Used
 
 - **Frontend**: React.js, Tailwind CSS, TypeScript
-- **Backend / Deployment**: Vercel, Render
+- **Backend / Deployment**: Render
 - **AI Integration**: Google Gemini API (Conversational AI, TTS, STT)
 - **Other Tools**: Vite, ESLint, Prettier
 
@@ -23,26 +23,6 @@ This portfolio site serves as a digital showcase of my work, featuring:
 Experience the live version of my portfolio at:  
 🔗 [https://neeraj-v-p.onrender.com/](https://neeraj-v-p.onrender.com/)
 
-## 📁 Project Structure
-
-/public
-/assets
-/images
-/audio
-/NEERAJ_V_PATTANASHETTI_RESUME.pdf
-/src
-/components
-/pages
-/styles
-/utils
-.gitignore
-README.md
-package.json
-tailwind.config.js
-vite.config.ts
-
-less
-Copy code
 
 ## 📄 Resume
 
