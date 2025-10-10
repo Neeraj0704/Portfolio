@@ -5,7 +5,7 @@ import https from "https";
 const url = "https://neeraj-v-p.onrender.com/"; // replace with your Render URL
 
 // Run every 14 minutes (before Render's 15min idle cutoff)
-cron.schedule("*/10 * * * *", () => {
+cron.schedule("*/1 * * * *", () => {
   https.get(url, (res) => {
     if (res.statusCode === 200) {
       console.log("✅ Self-ping successful at", new Date().toLocaleTimeString());
