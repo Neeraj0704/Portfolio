@@ -35,4 +35,4 @@ You can download my resume directly from the website or access it here:
 Feel free to reach out:  
 
 - **Email**: [neerajvpattanashetti@gmail.com](mailto:neerajvpattanashetti@gmail.com)  
-- **LinkedIn**: [https://www.linkedin.com/in/neeraj-vijayakumar-pattanashetti-613305239/]
+- **LinkedIn**: [Neeraj VP](https://www.linkedin.com/in/neeraj-vijayakumar-pattanashetti-613305239/)
