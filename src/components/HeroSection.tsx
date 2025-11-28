@@ -53,7 +53,7 @@ export default function HeroSection() {
 
             <div className="flex space-x-6 text-2xl">
               <a
-                href="https://www.linkedin.com/in/neeraj-vp-613305239/"
+                href="https://www.linkedin.com/in/neeraj-vijayakumar-pattanashetti-613305239/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted hover:text-primary transition-colors"

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0%" stop-color="#0ea5a4" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#g)" rx="16" />
+  <g fill="#fff" font-family="Inter, Arial, sans-serif">
+    <text x="50%" y="45%" text-anchor="middle" font-size="48" font-weight="700">Conversational</text>
+    <text x="50%" y="57%" text-anchor="middle" font-size="40" font-weight="600">Avatar</text>
+  </g>
+</svg>

@@ -3,6 +3,18 @@ import { Github, ExternalLink } from "lucide-react";
 export default function ProjectsSection() {
   const projects = [
     {
+      id: "ai-avatar",
+      title: "AI Conversational Avatar",
+      date: "Aug 2025",
+      description:
+        "Developed an AI-powered 3D avatar integrating LLMs (Gemini) for voice-enabled intelligent interactions, backed by RAG pipelines with Pinecone vector database for semantic context retrieval.",
+      image:
+        "/assets/conversational-avatar.svg",
+      technologies: ["LLMs (Gemini)", "Pinecone", "RAG", "TTS/STT"],
+      github: "",
+      demo: "#home",
+    },
+    {
       id: "fixmyiot",
       title: "FixMyIot",
       date: "Jan 2025",
@@ -37,18 +49,7 @@ export default function ProjectsSection() {
       github: "https://github.com/Neeraj0704/Facial-and-Gesture-recognition-for-Sign-Language",
       demo: "", // remove demo icon
     },
-    {
-      id: "panic-shield",
-      title: "Panic Shield",
-      date: "Oct 2023",
-      description:
-        "Smartwatch app developed using Python and Swift with 91% accuracy in AI model. Detects panic attacks and provides timely support for user well-being and security.",
-      image:
-        "https://images.unsplash.com/photo-1544117519-31a4b719223d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=300",
-      technologies: ["Python", "Swift", "NumPy", "SKLearn"],
-      github: "", // remove GitHub icon
-      demo: "https://devpost.com/software/panicshield",
-    },
+    // panic-shield removed per request
   ];
 
   return (
@@ -127,15 +128,30 @@ export default function ProjectsSection() {
                     </a>
                   )}
                   {project.demo && (
-                    <a
-                      href={project.demo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:text-foreground transition-colors"
-                      data-testid={`link-demo-${project.id}`}
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
+                    project.demo.startsWith("#") ? (
+                      <a
+                        href={project.demo}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const el = document.querySelector(project.demo);
+                          if (el) el.scrollIntoView({ behavior: "smooth" });
+                        }}
+                        className="text-primary hover:text-foreground transition-colors"
+                        data-testid={`link-demo-${project.id}`}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    ) : (
+                      <a
+                        href={project.demo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:text-foreground transition-colors"
+                        data-testid={`link-demo-${project.id}`}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    )
                   )}
                 </div>
               </div>

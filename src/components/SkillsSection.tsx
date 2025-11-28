@@ -1,24 +1,83 @@
-import { Code, Brain, Database } from "lucide-react";
+import { Code, Brain, Database, Cloud, Server, FileText, Wrench } from "lucide-react";
 
 export default function SkillsSection() {
   const skillCategories = [
     {
       title: "Programming Languages",
       icon: <Code className="text-primary" />,
-      skills: ["C", "Java", "C#", "Python", "HTML", "CSS", "JavaScript", "ReactJS", "NodeJS"],
+      skills: [
+        "Python",
+        "Java",
+        "C++",
+        "C#",
+        "TypeScript",
+        "JavaScript",
+        "Swift (basic)",
+      ],
       colorClass: "bg-primary/20 text-primary",
     },
     {
-      title: "AI & Machine Learning",
+      title: "Frameworks",
+      icon: <Server className="text-sky-400" />,
+      skills: ["Node.js", "Express", "React.js", "TensorFlow", "PyTorch"],
+      colorClass: "bg-sky-500/20 text-sky-400",
+    },
+    {
+      title: "Systems & Cloud",
+      icon: <Cloud className="text-cyan-400" />,
+      skills: [
+        "AWS",
+        "Firebase",
+        "CI/CD",
+        "Docker",
+        "Microservices",
+        "Distributed Systems",
+      ],
+      colorClass: "bg-cyan-500/20 text-cyan-400",
+    },
+    {
+      title: "AI / Machine Learning",
       icon: <Brain className="text-green-400" />,
-      skills: ["Deep Learning", "TensorFlow", "OpenCV", "YOLOv5", "CNN", "Apache OpenNLP"],
+      skills: [
+        "Large Language Models (LLMs)",
+        "Conversational AI",
+        "LangChain",
+        "API",
+        "Reinforcement Learning",
+        "Ray",
+        "Deep Learning",
+      ],
       colorClass: "bg-green-500/20 text-green-400",
     },
     {
-      title: "Tools & Databases",
+      title: "Databases",
       icon: <Database className="text-purple-400" />,
-      skills: ["Unity2D & 3D", "Google Maps API", "DBMS", "SQL", "SQLite", "Jira"],
+      skills: ["SQL", "NoSQL (Firebase Realtime DB)", "Data Modelling"],
       colorClass: "bg-purple-500/20 text-purple-400",
+    },
+    {
+      title: "Communication",
+      icon: <FileText className="text-amber-400" />,
+      skills: [
+        "Technical Documentation",
+        "Research Writing",
+        "Cross-functional Collaboration",
+      ],
+      colorClass: "bg-amber-500/20 text-amber-400",
+    },
+    {
+      title: "Tools / Other",
+      icon: <Wrench className="text-rose-400" />,
+      skills: [
+        "Agile",
+        "Jira",
+        "Debugging",
+        "Version Control",
+        "Testing Automation",
+        "Docker",
+        "Unity 2D/3D",
+      ],
+      colorClass: "bg-rose-500/20 text-rose-400",
     },
   ];
 

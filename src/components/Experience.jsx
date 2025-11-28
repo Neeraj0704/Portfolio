@@ -206,7 +206,7 @@ export const Experience = () => {
       <Environment preset="sunset" />
 
       <Html
-        position={[-5, 0, 0]}
+        position={[-4.5, 0, 0]}
         transform={false}
         occlude={false}
         style={{

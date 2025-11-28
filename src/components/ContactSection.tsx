@@ -87,11 +87,11 @@ export default function ContactSection() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-12 items-start">
+          <div className="flex flex-col items-center gap-12">
             {/* Contact Info */}
             <div className="space-y-8">
               <div
-                className="glass-morphism p-8 rounded-xl"
+                className="glass-morphism p-8 rounded-xl w-full max-w-md mx-auto"
                 data-testid="section-contact-info"
               >
                 <h3 className="text-2xl font-bold text-foreground mb-6">
@@ -147,9 +147,9 @@ export default function ContactSection() {
               </div>
 
               {/* Social Links */}
-              <div className="flex space-x-4">
+              <div className="flex space-x-4 justify-center">
                 <a
-                  href="https://www.linkedin.com/in/neeraj-vp-613305239/"
+                  href="https://www.linkedin.com/in/neeraj-vijayakumar-pattanashetti-613305239/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
@@ -169,7 +169,9 @@ export default function ContactSection() {
               </div>
             </div>
 
-            {/* Contact Form */}
+            {/*
+            Contact Form (commented out per request)
+
             <div
               className="glass-morphism p-8 rounded-xl"
               data-testid="form-contact"
@@ -269,6 +271,7 @@ export default function ContactSection() {
                 </Button>
               </form>
             </div>
+            */}
           </div>
         </div>
       </div>
