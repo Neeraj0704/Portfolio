@@ -1,29 +1,8 @@
-import React, { useRef, useEffect, useState, Suspense } from "react";
+import React, { useRef, useEffect } from "react";
 import { useGLTF, useFBX, useAnimations } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
-
-// Lazy load animations only when needed
-function useLazyAnimation(path: string) {
-  const [animation, setAnimation] = useState(null);
-  
-  useEffect(() => {
-    const loadAnimation = async () => {
-      try {
-        const { useFBX } = await import("@react-three/drei");
-        // Note: useFBX is a hook, so we need to handle this differently
-        // For now, we'll load synchronously but optimize the loading order
-        setAnimation(true);
-      } catch (err) {
-        console.error(`Failed to load animation: ${path}`, err);
-      }
-    };
-    loadAnimation();
-  }, [path]);
-  
-  return animation;
-}
 
 function AvatarComponent(props) {
   const { scene } = useGLTF("/68994a8568086dd7c6759d42.glb");
