@@ -12,16 +12,15 @@ export default function HeroSection() {
   const isMobile = useIsMobile();
   const [assetsReady, setAssetsReady] = useState(false);
   
-  // 🚀 Optimized preloading - start immediately but delay canvas render
+  // Show loading message for 5 seconds, then load canvas
   useEffect(() => {
     // Start preloading immediately
     preloadAvatarAssets();
     
-    // Delay canvas render slightly to allow initial assets to start loading
-    // This prevents blocking the main thread
+    // Show loading message for 5 seconds
     const timer = setTimeout(() => {
       setAssetsReady(true);
-    }, 100); // Small delay to let preload start
+    }, 5000); // 5 second delay
     
     return () => clearTimeout(timer);
   }, []);

@@ -30,15 +30,25 @@ function AvatarComponent(props) {
     group
   );
 
-  // Ensure Idle loops
-  useEffect(() => {
-    actions["Idle"].setLoop(THREE.LoopRepeat, Infinity);
-  }, [actions]);
-
   const currentAction = useRef(); // Tracks currently playing action
+
+  // Ensure Idle loops and start it immediately
+  useEffect(() => {
+    if (!actions || !actions["Idle"]) return;
+    
+    actions["Idle"].setLoop(THREE.LoopRepeat, Infinity);
+    
+    // Start idle animation immediately if no action is playing
+    if (!currentAction.current) {
+      currentAction.current = actions["Idle"];
+      actions["Idle"].reset().fadeIn(0.2).play();
+    }
+  }, [actions]);
 
   // Animation handler
   useEffect(() => {
+    if (!actions || !actions["Idle"]) return;
+
     let nextAnim = "Idle";
     if (props.triggerSalute) nextAnim = "Salute";
     else if (props.triggerGreeting) nextAnim = "Greet";
