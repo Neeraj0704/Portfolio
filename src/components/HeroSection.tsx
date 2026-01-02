@@ -145,7 +145,7 @@ export default function HeroSection() {
               <div className="w-full h-full flex items-center justify-center bg-muted/10 rounded-lg">
                 <div className="text-center space-y-2">
                   <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-                  <p className="text-sm text-muted-foreground">Loading 3D Avatar...</p>
+                  <p className="text-sm text-muted-foreground">Loading Avatar...</p>
                 </div>
               </div>
             )}
