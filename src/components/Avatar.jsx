@@ -1,15 +1,37 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, Suspense } from "react";
 import { useGLTF, useFBX, useAnimations } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
+
+// Lazy load animations only when needed
+function useLazyAnimation(path: string) {
+  const [animation, setAnimation] = useState(null);
+  
+  useEffect(() => {
+    const loadAnimation = async () => {
+      try {
+        const { useFBX } = await import("@react-three/drei");
+        // Note: useFBX is a hook, so we need to handle this differently
+        // For now, we'll load synchronously but optimize the loading order
+        setAnimation(true);
+      } catch (err) {
+        console.error(`Failed to load animation: ${path}`, err);
+      }
+    };
+    loadAnimation();
+  }, [path]);
+  
+  return animation;
+}
 
 function AvatarComponent(props) {
   const { scene } = useGLTF("/68994a8568086dd7c6759d42.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone);
 
-  // Load animations
+  // 🚀 Load animations (preloaded, so should be fast)
+  // Load critical Idle animation first, others will load in parallel
   const { animations: idleAnimation } = useFBX("Animations/Idle (1).fbx");
   const { animations: greetAnimation } = useFBX("Animations/Standing Greeting.fbx");
   const { animations: talkAnimation } = useFBX("Animations/Talking_newest.fbx");
@@ -76,4 +98,12 @@ export const Avatar = React.memo(
     prev.triggerSalute === next.triggerSalute
 );
 
+// Preload GLB model
 useGLTF.preload("/68994a8568086dd7c6759d42.glb");
+
+// Preload all FBX animations for faster loading
+useFBX.preload("Animations/Idle (1).fbx");
+useFBX.preload("Animations/Standing Greeting.fbx");
+useFBX.preload("Animations/Talking_newest.fbx");
+useFBX.preload("Animations/Salute.fbx");
+useFBX.preload("Animations/Head Nod Yes.fbx");

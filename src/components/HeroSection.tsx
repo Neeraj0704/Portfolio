@@ -5,9 +5,27 @@ import { Experience } from "./Experience";
 import { motion } from "framer-motion";
 import { useIsMobile } from "../hooks/use-mobile";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "./ui/tooltip";
+import { Suspense, useState, useEffect } from "react";
+import { preloadAvatarAssets } from "./AvatarPreloader";
 
 export default function HeroSection() {
   const isMobile = useIsMobile();
+  const [assetsReady, setAssetsReady] = useState(false);
+  
+  // 🚀 Optimized preloading - start immediately but delay canvas render
+  useEffect(() => {
+    // Start preloading immediately
+    preloadAvatarAssets();
+    
+    // Delay canvas render slightly to allow initial assets to start loading
+    // This prevents blocking the main thread
+    const timer = setTimeout(() => {
+      setAssetsReady(true);
+    }, 100); // Small delay to let preload start
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -101,18 +119,37 @@ export default function HeroSection() {
               </Tooltip>
             </TooltipProvider>*/}
 
-            {/* 3D Canvas */}
-            
-            <Canvas 
-              shadows 
-              camera={{ 
-                position: [0, 0, window.innerWidth < 768 ? 10 : 8], 
-                fov: window.innerWidth < 768 ? 60 : 50 
-              }}
-              className="w-full h-full"
-            >
-              <Experience />
-            </Canvas>
+            {/* 3D Canvas - Optimized for faster loading */}
+            {assetsReady ? (
+              <Canvas 
+                shadows={false} // 🚀 Disable shadows for faster rendering
+                camera={{ 
+                  position: [0, 0, window.innerWidth < 768 ? 10 : 8], 
+                  fov: window.innerWidth < 768 ? 60 : 50 
+                }}
+                className="w-full h-full"
+                dpr={[1, 1.5]} // 🚀 Lower pixel ratio for better performance
+                gl={{ 
+                  antialias: false, // Disable antialiasing for faster rendering
+                  alpha: true,
+                  powerPreference: "high-performance", // Use high-performance GPU
+                  stencil: false, // Disable stencil buffer
+                  depth: true
+                }}
+                performance={{ min: 0.5 }} // Lower performance threshold
+              >
+                <Suspense fallback={null}>
+                  <Experience />
+                </Suspense>
+              </Canvas>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-muted/10 rounded-lg">
+                <div className="text-center space-y-2">
+                  <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+                  <p className="text-sm text-muted-foreground">Loading 3D Avatar...</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

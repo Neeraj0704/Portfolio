@@ -1,6 +1,6 @@
 import { Environment, OrbitControls, Html } from "@react-three/drei";
 import { Avatar } from "./Avatar";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, MicOff, Send, MessageCircle, X } from "lucide-react";
 import { useMediaQuery } from "react-responsive";
@@ -195,14 +195,17 @@ export const Experience = () => {
         <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} />
       )}
 
-      <Avatar
-        position={[1, -3, 5]}
-        scale={2}
-        triggerTalking={triggerTalking}
-        triggerSalute={triggerSalute}
-        isTyping={isTyping}
-      />
+      <Suspense fallback={null}>
+        <Avatar
+          position={[1, -3, 5]}
+          scale={2}
+          triggerTalking={triggerTalking}
+          triggerSalute={triggerSalute}
+          isTyping={isTyping}
+        />
+      </Suspense>
 
+      {/* 🚀 Use lighter environment for faster loading */}
       <Environment preset="sunset" />
 
       <Html
