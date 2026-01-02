@@ -122,6 +122,39 @@
   .navbar {
     backdrop-filter: blur(16px);
     background: rgba(0, 0, 0, 0.8);
+    z-index: 9999 !important;
+    isolation: isolate; /* Create new stacking context */
+  }
+
+  /* Target drei Html portal containers - ensure they stay below nav */
+  .chat-panel-html,
+  .chat-panel-html > *,
+  body > div[style*="position: fixed"]:has(.chat-panel-html),
+  body > div[style*="position: fixed"][style*="top: 50%"],
+  body > div[style*="position: fixed"][style*="left: 5px"],
+  body > div[style*="position: fixed"][style*="left: 20px"] {
+    z-index: 10 !important;
+  }
+
+  /* More specific targeting for drei portals */
+  div[data-r3f-portal],
+  [data-r3f-portal],
+  [class*="r3f"] {
+    z-index: 10 !important;
+  }
+
+  /* Ensure nav is always on top - highest priority */
+  nav.navbar {
+    position: fixed !important;
+    z-index: 9999 !important;
+    isolation: isolate !important;
+  }
+
+  /* Ensure all Radix UI portals (Dialog, Sheet, etc) are below nav but above chat */
+  [data-radix-portal],
+  [data-radix-dialog-overlay],
+  [data-radix-sheet-overlay] {
+    z-index: 50 !important;
   }
 
   

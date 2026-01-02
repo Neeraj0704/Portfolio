@@ -21,6 +21,7 @@ export const Experience = () => {
   const speechTimeoutRef = useRef(null);
   const chatContainerRef = useRef(null);
   const currentAudioRef = useRef(null);
+  const htmlRef = useRef(null);
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const scrollToBottom = () => {
@@ -37,6 +38,55 @@ export const Experience = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Fix z-index for drei Html portal - ensure it stays below nav
+  useEffect(() => {
+    const fixPortalZIndex = () => {
+      // Find all fixed position divs that might be drei portals
+      const fixedDivs = document.querySelectorAll('body > div[style*="position: fixed"]');
+      fixedDivs.forEach((div) => {
+        const style = div.getAttribute('style') || '';
+        const computedStyle = window.getComputedStyle(div);
+        // Only target divs that have our chat panel positioning
+        if (style.includes('top: 50%') || style.includes('left: 5px') || style.includes('left: 20px') || 
+            computedStyle.top === '50%' || computedStyle.left === '5px' || computedStyle.left === '20px') {
+          div.style.setProperty('z-index', '10', 'important');
+          // Also check child elements
+          const children = div.querySelectorAll('*');
+          children.forEach((child) => {
+            if (window.getComputedStyle(child).position === 'fixed') {
+              child.style.setProperty('z-index', '10', 'important');
+            }
+          });
+        }
+      });
+      
+      // Also target by className
+      const chatPanels = document.querySelectorAll('.chat-panel-html, [class*="chat-panel"]');
+      chatPanels.forEach((el) => {
+        el.style.setProperty('z-index', '10', 'important');
+        if (el.parentElement) {
+          el.parentElement.style.setProperty('z-index', '10', 'important');
+        }
+      });
+    };
+
+    // Run immediately and after delays to catch portal creation
+    fixPortalZIndex();
+    const timers = [
+      setTimeout(fixPortalZIndex, 50),
+      setTimeout(fixPortalZIndex, 100),
+      setTimeout(fixPortalZIndex, 200),
+      setTimeout(fixPortalZIndex, 500),
+    ];
+    const observer = new MutationObserver(fixPortalZIndex);
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
+
+    return () => {
+      timers.forEach(timer => clearTimeout(timer));
+      observer.disconnect();
+    };
+  }, []);
 
   const initRecognition = () => {
     const SpeechRecognition =
@@ -212,6 +262,7 @@ export const Experience = () => {
         position={[-4.5, 0, 0]}
         transform={false}
         occlude={false}
+        className="chat-panel-html"
         style={{
           position: "fixed",
           top: "50%",
