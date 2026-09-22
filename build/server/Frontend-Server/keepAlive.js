@@ -1,18 +1,14 @@
-// keepAlive.js
 import cron from "node-cron";
 import https from "https";
-
-const url = "https://neeraj-v-p.onrender.com/"; // replace with your Render URL
-
-// Run every 14 minutes (before Render's 15min idle cutoff)
-cron.schedule("*/1 * * * *", () => {
-  https.get(url, (res) => {
-    if (res.statusCode === 200) {
-      console.log("✅ Self-ping successful at", new Date().toLocaleTimeString());
-    } else {
-      console.log("⚠ Ping failed:", res.statusCode);
-    }
-  }).on("error", (err) => {
-    console.error("❌ Ping error:", err.message);
-  });
-});
+if (process.env.NODE_ENV === "production") {
+    const url = process.env.RENDER_EXTERNAL_URL || "https://neeraj-v-p.onrender.com/";
+    cron.schedule("*/1 * * * *", () => {
+        const request = https.get(url, (response) => {
+            response.resume();
+            if (response.statusCode !== 200)
+                console.warn("Self-ping failed:", response.statusCode);
+        });
+        request.setTimeout(10_000, () => request.destroy());
+        request.on("error", (error) => console.error("Self-ping error:", error.message));
+    });
+}

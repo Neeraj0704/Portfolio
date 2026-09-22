@@ -98,6 +98,8 @@ export default function Navigation() {
                 variant="default"
                 size="sm"
                 onClick={() => setIsOpen(!isOpen)}
+                aria-label={isOpen ? "Close menu" : "Open menu"}
+                aria-expanded={isOpen}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
                 data-testid="mobile-menu-toggle"
               >

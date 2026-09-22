@@ -1,6 +1,6 @@
 import { Environment, OrbitControls, Html } from "@react-three/drei";
 import { Avatar } from "./Avatar";
-import { useState, useRef, useEffect, Suspense } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, MicOff, Send, MessageCircle, X } from "lucide-react";
 import { useMediaQuery } from "react-responsive";
@@ -21,8 +21,7 @@ export const Experience = () => {
   const speechTimeoutRef = useRef(null);
   const chatContainerRef = useRef(null);
   const currentAudioRef = useRef(null);
-  const htmlRef = useRef(null);
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const isMobile = useMediaQuery({ maxWidth: 1023 });
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -38,55 +37,6 @@ export const Experience = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  // Fix z-index for drei Html portal - ensure it stays below nav
-  useEffect(() => {
-    const fixPortalZIndex = () => {
-      // Find all fixed position divs that might be drei portals
-      const fixedDivs = document.querySelectorAll('body > div[style*="position: fixed"]');
-      fixedDivs.forEach((div) => {
-        const style = div.getAttribute('style') || '';
-        const computedStyle = window.getComputedStyle(div);
-        // Only target divs that have our chat panel positioning
-        if (style.includes('top: 50%') || style.includes('left: 5px') || style.includes('left: 20px') || 
-            computedStyle.top === '50%' || computedStyle.left === '5px' || computedStyle.left === '20px') {
-          div.style.setProperty('z-index', '10', 'important');
-          // Also check child elements
-          const children = div.querySelectorAll('*');
-          children.forEach((child) => {
-            if (window.getComputedStyle(child).position === 'fixed') {
-              child.style.setProperty('z-index', '10', 'important');
-            }
-          });
-        }
-      });
-      
-      // Also target by className
-      const chatPanels = document.querySelectorAll('.chat-panel-html, [class*="chat-panel"]');
-      chatPanels.forEach((el) => {
-        el.style.setProperty('z-index', '10', 'important');
-        if (el.parentElement) {
-          el.parentElement.style.setProperty('z-index', '10', 'important');
-        }
-      });
-    };
-
-    // Run immediately and after delays to catch portal creation
-    fixPortalZIndex();
-    const timers = [
-      setTimeout(fixPortalZIndex, 50),
-      setTimeout(fixPortalZIndex, 100),
-      setTimeout(fixPortalZIndex, 200),
-      setTimeout(fixPortalZIndex, 500),
-    ];
-    const observer = new MutationObserver(fixPortalZIndex);
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
-
-    return () => {
-      timers.forEach(timer => clearTimeout(timer));
-      observer.disconnect();
-    };
-  }, []);
 
   const initRecognition = () => {
     const SpeechRecognition =
@@ -145,6 +95,8 @@ export const Experience = () => {
         body: JSON.stringify({ query: input }),
       });
 
+      if (!response.ok) throw new Error(`Chat request failed: ${response.status}`);
+
       const data = await response.json();
       const replyText = data.text || "Sorry, I couldn't get a response.";
 
@@ -165,13 +117,13 @@ export const Experience = () => {
 
         const audioBlob = new Blob(
           [Uint8Array.from(atob(data.audioBase64), (c) => c.charCodeAt(0))],
-          { type: "audio/wav" }
+          { type: data.audioMimeType || "audio/mpeg" }
         );
         const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
         currentAudioRef.current = audio;
 
-        audio.play();
+        await audio.play();
         audio.onended = () => {
           setTriggerTalking(false);
           setIsPlaying(false);
@@ -245,33 +197,26 @@ export const Experience = () => {
         <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} />
       )}
 
-      <Suspense fallback={null}>
         <Avatar
-          position={[1, -3, 5]}
-          scale={2}
+          position={isMobile ? [0, 0, 4] : [0.95, -2.5, 4]}
+          scale={isMobile ? 1.5 : 2}
           triggerTalking={triggerTalking}
           triggerSalute={triggerSalute}
           isTyping={isTyping}
         />
-      </Suspense>
 
       {/* 🚀 Use lighter environment for faster loading */}
       <Environment preset="sunset" />
 
       <Html
-        position={[-4.5, 0, 0]}
+        fullscreen
         transform={false}
         occlude={false}
+        zIndexRange={[10, 0]}
         className="chat-panel-html"
-        style={{
-          position: "fixed",
-          top: "50%",
-          left: isMobile? "5px":"20px",
-          transform: "translateY(-50%)",
-          zIndex: 10,
-          pointerEvents: "auto",
-        }}
+        style={{ pointerEvents: "none" }}
       >
+        <div className="absolute inset-x-0 bottom-0 pointer-events-auto lg:inset-x-auto lg:left-0 lg:top-1/2 lg:bottom-auto lg:-translate-y-1/2">
         <AnimatePresence>
           {!chatStarted ? (
             <motion.div
@@ -280,7 +225,7 @@ export const Experience = () => {
               exit={{ opacity: 0, x: -50 }}
               className="flex flex-col items-center space-y-4"
             >
-              <div className="glass-morphism p-4 text-center w-64 h-64 sm:w-80 sm:h-80 mx-auto">
+              <div className="glass-morphism p-4 text-center w-full max-w-sm h-64 lg:w-72 lg:h-80 mx-auto">
                 <MessageCircle className="w-10 sm:w-12 h-10 sm:h-12 text-primary mx-auto mb-2 sm:mb-4" />
                 <h3 className="text-lg sm:text-xl font-bold mb-1 sm:mb-2 text-white">
                   Chat with Neeraj's AI
@@ -301,7 +246,7 @@ export const Experience = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="glass-morphism p-2 sm:p-4 text-center w-64 h-64 sm:w-96 sm:h-[400px] mx-auto flex flex-col"
+              className="glass-morphism p-2 sm:p-4 text-center w-full max-w-sm h-[300px] lg:w-80 lg:h-[400px] mx-auto flex flex-col"
             >
               {/* Header */}
               <div className="flex items-center justify-between p-2 sm:p-4 border-b border-gray-700">
@@ -313,6 +258,7 @@ export const Experience = () => {
                 </div>
                 <button
                   onClick={handleBackClick}
+                  aria-label="Close chat"
                   className="text-gray-400 hover:text-white transition-colors"
                 >
                   <X className="w-4 sm:w-5 h-4 sm:h-5" />
@@ -322,7 +268,7 @@ export const Experience = () => {
               {/* Messages */}
               <div
                 ref={chatContainerRef}
-                className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-1 sm:space-y-3 text-xs sm:text-sm"
+                className="min-h-0 flex-1 overflow-y-auto p-2 sm:p-4 space-y-1 sm:space-y-3 text-xs sm:text-sm"
               >
                 {messages.map((message, index) => (
                   <div
@@ -409,11 +355,12 @@ export const Experience = () => {
                       value={textInput}
                       onChange={(e) => setTextInput(e.target.value)}
                       placeholder="Type your message..."
-                      className="flex-1 bg-gray-700 text-white px-2 sm:px-3 py-1 sm:py-2 rounded border border-gray-600 focus:border-primary focus:outline-none text-xs sm:text-sm"
+                      className="min-w-0 flex-1 bg-gray-700 text-white px-2 sm:px-3 py-1 sm:py-2 rounded border border-gray-600 focus:border-primary focus:outline-none text-xs sm:text-sm"
                       disabled={isPlaying}
                     />
                     <button
                       type="submit"
+                      aria-label="Send message"
                       disabled={!textInput.trim() || isPlaying}
                       className="bg-primary hover:bg-primary/80 disabled:bg-gray-600 text-white p-1 sm:p-2 rounded transition-colors"
                     >
@@ -424,6 +371,7 @@ export const Experience = () => {
                   <div className="flex items-center justify-center space-x-1 sm:space-x-2">
                     <button
                       onClick={startVoiceRecognition}
+                      aria-label="Start voice input"
                       disabled={listening || isPlaying}
                       className={`p-2 sm:p-3 rounded-full transition-colors ${
                         listening
@@ -450,6 +398,7 @@ export const Experience = () => {
             </motion.div>
           )}
         </AnimatePresence>
+        </div>
       </Html>
     </>
   );

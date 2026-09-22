@@ -28,9 +28,28 @@ Experience the live version of my portfolio at:
 
 You can download my resume directly from the website or access it here:  
 
-🔗 [NEERAJ_V_PATTANASHETTI_RESUME.pdf](https://github.com/Neeraj0704/Portfolio/raw/main/public/NEERAJ_V_PATTANASHETTI_RESUME.pdf)
+🔗 [Neeraj_V_Pattanashetti_Resume.pdf](public/Neeraj_V_Pattanashetti_Resume.pdf)
 
-## 📬 Contact
+## Development and Deployment
+
+Production is hosted on Render from the `master` branch.
+Run `npm ci`, `npm run check`, and `npm test` before deploying.
+`npm run build` builds both the Vite client and the TypeScript server;
+`npm start` serves the result. The generated server is currently tracked
+for compatibility with the existing Render deployment, so include regenerated
+`build/server` files when changing server source.
+
+For local development, run `npm run build:server` and `npm start` alongside
+`npm run dev`. The Vite API proxy targets the server on port 3000.
+
+Chat requires `PINECONE_API_KEY`, `PINECONE_INDEX`, `GEMINI_API_KEY`,
+and `TEXT_TO_SPEECH_API` in the hosting environment. The optional contact
+endpoint uses `SMTP_APP_PASSWORD` and optionally `SMTP_USER`; the contact
+form is currently hidden. Never commit credentials.
+
+`GET /api/health` reports server availability and Render's deployed commit.
+
+## Contact Details
 
 Feel free to reach out:  
 

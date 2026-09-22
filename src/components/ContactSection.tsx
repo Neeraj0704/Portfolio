@@ -89,7 +89,7 @@ export default function ContactSection() {
 
           <div className="flex flex-col items-center gap-12">
             {/* Contact Info */}
-            <div className="space-y-8">
+            <div className="w-full max-w-md space-y-8">
               <div
                 className="glass-morphism p-8 rounded-xl w-full max-w-md mx-auto"
                 data-testid="section-contact-info"
@@ -103,10 +103,10 @@ export default function ContactSection() {
                     <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
                       <Mail className="text-primary" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-foreground font-medium">Email</p>
                       <p
-                        className="text-muted-foreground"
+                        className="break-all text-muted-foreground"
                         data-testid="text-email"
                       >
                         neerajvpattanashetti@gmail.com

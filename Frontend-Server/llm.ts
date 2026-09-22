@@ -1,124 +1,82 @@
-// llm.ts
 import dotenv from "dotenv";
 import { pipeline, type FeatureExtractionPipeline } from "@xenova/transformers";
 import { Pinecone } from "@pinecone-database/pinecone";
-import { GoogleGenerativeAI } from "@google/generative-ai";  
-import path from "path";
-import fs from "fs";
-import { execFile } from "child_process";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 dotenv.config();
 
-// 🔹 Validate env vars first
-if (!process.env.PINECONE_API_KEY || !process.env.PINECONE_INDEX) {
-  throw new Error("Missing Pinecone environment variables");
-}
+let embedder: Promise<FeatureExtractionPipeline> | undefined;
 
-// Initialize Pinecone
-const pc = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
-const index = pc.Index(process.env.PINECONE_INDEX);
-
-let embedder: FeatureExtractionPipeline | null = null;
-async function initializeEmbedder(): Promise<FeatureExtractionPipeline> {
-  if (!embedder) {
-    console.log("⏳ Loading embedding model...");
-    embedder = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
-    console.log("✅ Embedding model loaded!");
-  }
-  return embedder;
+function requiredEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing ${name} environment variable`);
+  return value;
 }
 
 async function getEmbedding(text: string): Promise<number[]> {
-  const model = await initializeEmbedder();
-  if (!model) throw new Error("Embedder not initialized");
-
+  // Share the initial model load between concurrent requests.
+  embedder ??= pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2").catch((error) => {
+    embedder = undefined;
+    throw error;
+  });
+  const model = await embedder;
   const output = await model(text, { pooling: "mean", normalize: true });
-  const embedding = Array.from(output.data as Float32Array) as number[];
-  if (embedding.length !== 384) {
-    throw new Error(`Unexpected embedding length: ${embedding.length}`);
-  }
+  const embedding = Array.from(output.data as Float32Array);
+  if (embedding.length !== 384) throw new Error(`Unexpected embedding length: ${embedding.length}`);
   return embedding;
 }
 
-// 🔹 Query Pinecone
 export async function queryResume(queryText: string, topK = 5): Promise<string[]> {
-  console.log(`🔍 Pinecone query: "${queryText}"`);
+  const pc = new Pinecone({ apiKey: requiredEnv("PINECONE_API_KEY") });
+  const index = pc.Index(requiredEnv("PINECONE_INDEX"));
   const vector = await getEmbedding(queryText);
   const results = await index.query({ vector, topK, includeMetadata: true });
-  return results.matches.map(
-    (m) => (m.metadata as { text?: string })?.text || ""
-  );
+  return results.matches.map((match) => (match.metadata as { text?: string })?.text || "");
 }
 
-// 🔹 Direct Kokoro synthesis (no external test.js)
-async function synthesizeSpeech(text: string): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const outFile = path.join(process.cwd(), "output.wav");
-
-    // 👇 Always resolve the absolute path to test.js
-    const scriptPath = path.join(process.cwd(), "Frontend-Server", "test.js");
-    console.log("📂 Running test.js from:", scriptPath); // debug
-
-    execFile("node", [scriptPath, text, outFile], (err, stdout, stderr) => {
-      if (err) {
-        console.error("❌ Error running test.js:", stderr);
-        return reject(err);
-      }
-
-      const filePath = stdout.trim();
-      if (!fs.existsSync(filePath)) {
-        return reject("Audio file not generated");
-      }
-
-      const audioBuffer = fs.readFileSync(filePath);
-      resolve(audioBuffer);
-    });
+export async function synthesizeSpeech(text: string): Promise<Buffer> {
+  const response = await fetch("https://texttospeech.googleapis.com/v1/text:synthesize", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Goog-Api-Key": requiredEnv("TEXT_TO_SPEECH_API") },
+    body: JSON.stringify({
+      input: { text },
+      voice: { languageCode: "en-US", ssmlGender: "MALE" },
+      audioConfig: { audioEncoding: "MP3" },
+    }),
+    signal: AbortSignal.timeout(30_000),
   });
+  if (!response.ok) throw new Error(`TTS API request failed: ${response.status}`);
+  const data = await response.json() as { audioContent?: string };
+  if (!data.audioContent) throw new Error("TTS API returned no audio");
+  return Buffer.from(data.audioContent, "base64");
 }
 
-
-// 🔹 Gemini with Native TTS
-export async function chatWithGemini(
-  userQuery: string,
-  contextDocs: string[]
-): Promise<{ text: string; audio: Buffer }> {
-  if (!process.env.GEMINI_API_KEY) {
-    throw new Error("GEMINI_API_KEY not set!");
-  }
-
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-  // 1️⃣ Gemini text model
+export async function chatWithGemini(userQuery: string, contextDocs: string[]) {
+  const genAI = new GoogleGenerativeAI(requiredEnv("GEMINI_API_KEY"));
   const textModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const prompt = `You are an AI assistant on Neeraj's portfolio website. Follow these rules strictly:
 
-  const prompt = `You are Neeraj, an AI avatar on my portfolio website. 
-Your style:
--When asked about work-experience ignore my teching and student mentorship always
--in my fixmyiot project i used deepseek models for openai
-- Speak in first person ("I", "me") 
-- Be concise: 2-3 sentences max  IN THE RESPONSE AND IT SHOULD BE COMPLETE THIS IS SHOULD BE FOLLOWED STRICTLY
-- If the user gives their name, use it naturally in future replies  
-- If the user asks about your projects, always start by highlighting your "FixMyIoT" project. 
-- Come up with a funny answer if the user asks about your favorite food or color and also if they ask about hobbies tell i like cricket and football(soccer) but frame it in a proper and complete sentence.
-- Do not include * in any answer
-- If the user asks about unrelated stuff (politics, celebrities, news), reply: "I don’t have that information. Sorry!"
--Example: for length of response STRICTLY FOLLOW THE LENGTH 
-User: "Tell me about your FixMyIoT project."
-Neeraj: "FixMyIoT is an AI-powered assistant I built to troubleshoot smart devices using Deepseek models. It guides users with step-by-step solutions through a simple web app with secure login and responsive design."
+### Persona & Style
+- You are an AI assistant that interacts with users on behalf of Neeraj.
+- Speak naturally in first person as the assistant ("I", "me") most of the time.
+- Be concise: 2 sentences only, never shorter or longer.
 
+### Content Rules
+- Projects: Always highlight projects that are relevant first.
+- Skills: Mention only the top 3-4 important skills (e.g., Python, Java, React, Node.js, TypeScript) naturally, without listing everything.
+- Favorite food or color: reply humorously in a complete sentence.
+- Hobbies: mention Neeraj enjoys cricket and football (soccer) in a natural way.
+- Unrelated topics (politics, celebrities, news, etc.): reply with "I don't have that information. Sorry!"
+- Always produce a complete, natural, and friendly reply with no asterisks or special characters.
 
-Context:
+Context for reference:
 ${contextDocs.join("\n\n")}
 
-Question:
+User Question:
 ${userQuery}`;
 
   const textResp = await textModel.generateContent(prompt);
-  const reply = textResp.response.text();
-  console.log("🤖 Gemini reply:", reply);
-
-  // 2️⃣ Call Kokoro (Python) for TTS
-  const audioFile = await synthesizeSpeech(reply);
-
-  return { text: reply, audio: audioFile };
+  const text = textResp.response.text();
+  const audio = await synthesizeSpeech(text);
+  return { text, audioBase64: audio.toString("base64"), audioMimeType: "audio/mpeg" };
 }

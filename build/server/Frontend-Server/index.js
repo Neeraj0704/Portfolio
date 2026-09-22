@@ -4,41 +4,29 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { registerRoutes } from "./routes.js";
 import "./keepAlive.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const app = express();
-
-// Enable CORS (only needed in dev mode)
 if (process.env.NODE_ENV !== "production") {
-  app.use(
-    cors({
-      origin: "http://localhost:5173", // frontend dev server
-      methods: ["GET", "POST"],
-      allowedHeaders: ["Content-Type"],
-    })
-  );
+    app.use(cors({ origin: "http://localhost:5173" }));
 }
-
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-// Register API routes
-registerRoutes(app);
-
-// ✅ Serve frontend from dist
-const distPath = path.join(__dirname, "../../../dist");
-app.use(express.static(distPath));
-
-// ✅ Catch-all route (send index.html)
-app.get("/*\w", (req, res) => {
-  res.sendFile(path.join(distPath, "index.html"));
+app.get("/api/health", (_req, res) => {
+    res.json({ status: "ok", commit: process.env.RENDER_GIT_COMMIT || null });
 });
-
-// Use Render's PORT or fallback to 3000 locally
-const PORT = Number(process.env.PORT) || 3000;
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 Server running at http://0.0.0.0:${PORT}`);
+registerRoutes(app);
+app.use("/api", (_req, res) => {
+    res.status(404).json({ error: "API route not found" });
+});
+const distPath = fileURLToPath(new URL("../../../dist", import.meta.url));
+app.use(express.static(distPath));
+app.get("/{*path}", (req, res) => {
+    if (path.extname(req.path)) {
+        res.sendStatus(404);
+        return;
+    }
+    res.sendFile(path.join(distPath, "index.html"));
+});
+const port = Number(process.env.PORT || 3000);
+const server = app.listen(port, "0.0.0.0", () => {
+    console.log(`Server listening on port ${server.address().port}`);
 });

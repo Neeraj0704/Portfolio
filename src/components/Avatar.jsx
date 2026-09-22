@@ -25,25 +25,11 @@ function AvatarComponent(props) {
   headnodAnimation[0].name = "Headnod";
 
   const group = useRef();
-  const { actions } = useAnimations(
-    [idleAnimation[0], greetAnimation[0], talkAnimation[0], saluteAnimation[0], headnodAnimation[0]],
-    group
+  const clips = React.useMemo(
+    () => [idleAnimation[0], greetAnimation[0], talkAnimation[0], saluteAnimation[0], headnodAnimation[0]],
+    [idleAnimation, greetAnimation, talkAnimation, saluteAnimation, headnodAnimation]
   );
-
-  const currentAction = useRef(); // Tracks currently playing action
-
-  // Ensure Idle loops and start it immediately
-  useEffect(() => {
-    if (!actions || !actions["Idle"]) return;
-    
-    actions["Idle"].setLoop(THREE.LoopRepeat, Infinity);
-    
-    // Start idle animation immediately if no action is playing
-    if (!currentAction.current) {
-      currentAction.current = actions["Idle"];
-      actions["Idle"].reset().fadeIn(0.2).play();
-    }
-  }, [actions]);
+  const { actions } = useAnimations(clips, group);
 
   // Animation handler
   useEffect(() => {
@@ -54,13 +40,10 @@ function AvatarComponent(props) {
     else if (props.triggerGreeting) nextAnim = "Greet";
     else if (props.triggerTalking) nextAnim = "Talk";
 
-    if (currentAction.current !== actions[nextAnim]) {
-      if (currentAction.current) {
-        currentAction.current.fadeOut(0.2);
-      }
-      currentAction.current = actions[nextAnim];
-      currentAction.current.reset().fadeIn(0.2).play();
-    }
+    const action = actions[nextAnim];
+    if (!action) return;
+    action.reset().setLoop(THREE.LoopRepeat, Infinity).fadeIn(0.2).play();
+    return () => action.fadeOut(0.2);
   }, [props.triggerGreeting, props.triggerTalking, props.triggerSalute, actions]);
 
   return (
@@ -79,13 +62,7 @@ function AvatarComponent(props) {
 }
 
 // Memoize to prevent unnecessary re-renders
-export const Avatar = React.memo(
-  AvatarComponent,
-  (prev, next) =>
-    prev.triggerGreeting === next.triggerGreeting &&
-    prev.triggerTalking === next.triggerTalking &&
-    prev.triggerSalute === next.triggerSalute
-);
+export const Avatar = React.memo(AvatarComponent);
 
 // Preload GLB model
 useGLTF.preload("/68994a8568086dd7c6759d42.glb");

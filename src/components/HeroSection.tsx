@@ -1,29 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Linkedin, Github, Mail } from "lucide-react";
 import { Canvas } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import { Experience } from "./Experience";
-import { motion } from "framer-motion";
-import { useIsMobile } from "../hooks/use-mobile";
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "./ui/tooltip";
-import { Suspense, useState, useEffect } from "react";
-import { preloadAvatarAssets } from "./AvatarPreloader";
+import { useMediaQuery } from "react-responsive";
+import { Suspense } from "react";
 
 export default function HeroSection() {
-  const isMobile = useIsMobile();
-  const [assetsReady, setAssetsReady] = useState(false);
-  
-  // Show loading message for 5 seconds, then load canvas
-  useEffect(() => {
-    // Start preloading immediately
-    preloadAvatarAssets();
-    
-    // Show loading message for 5 seconds
-    const timer = setTimeout(() => {
-      setAssetsReady(true);
-    }, 5000); // 5 second delay
-    
-    return () => clearTimeout(timer);
-  }, []);
+  const isMobile = useMediaQuery({ maxWidth: 1023 });
   
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -35,10 +19,10 @@ export default function HeroSection() {
   return (
     <section id="home" className="min-h-screen flex items-center pt-20">
       <div className="container mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           
           {/* LEFT TEXT SECTION */}
-          <div className="space-y-8 animate-fade-in">
+          <div className="min-w-0 space-y-8 animate-fade-in">
             <div className="space-y-4">
               <h1 className="text-5xl md:text-7xl font-bold">
                 Hi, I'm <span className="text-primary">Neeraj</span>
@@ -95,7 +79,7 @@ export default function HeroSection() {
           </div>
 
           {/* RIGHT SIDE — INFO BUTTON + CANVAS */}
-          <div className="relative w-full h-[300px] sm:h-[400px] lg:h-[500px]">
+          <div className="relative min-w-0 w-full h-[600px] lg:h-[500px]">
             {/* Tooltip Button Overlay */}
             {/*<TooltipProvider>
               <Tooltip>
@@ -119,12 +103,11 @@ export default function HeroSection() {
             </TooltipProvider>*/}
 
             {/* 3D Canvas - Optimized for faster loading */}
-            {assetsReady ? (
               <Canvas 
                 shadows={false} // 🚀 Disable shadows for faster rendering
                 camera={{ 
-                  position: [0, 0, window.innerWidth < 768 ? 10 : 8], 
-                  fov: window.innerWidth < 768 ? 60 : 50 
+                  position: [0, 0, isMobile ? 10 : 8],
+                  fov: isMobile ? 60 : 50
                 }}
                 className="w-full h-full"
                 dpr={[1, 1.5]} // 🚀 Lower pixel ratio for better performance
@@ -137,18 +120,14 @@ export default function HeroSection() {
                 }}
                 performance={{ min: 0.5 }} // Lower performance threshold
               >
-                <Suspense fallback={null}>
+                <Suspense fallback={
+                  <Html center zIndexRange={[10, 0]}>
+                    <p role="status" className="whitespace-nowrap text-sm text-muted-foreground">Loading Avatar...</p>
+                  </Html>
+                }>
                   <Experience />
                 </Suspense>
               </Canvas>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-muted/10 rounded-lg">
-                <div className="text-center space-y-2">
-                  <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-                  <p className="text-sm text-muted-foreground">Loading Avatar...</p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
