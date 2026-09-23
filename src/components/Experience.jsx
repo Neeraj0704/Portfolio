@@ -50,20 +50,14 @@ export const Experience = () => {
     stopResponseAudio();
   }, [stopResponseAudio]);
 
-  const scrollToBottom = () => {
-    if (chatContainerRef.current) {
-      setTimeout(() => {
-        chatContainerRef.current.scrollTo({
-          top: chatContainerRef.current.scrollHeight,
-          behavior: "smooth",
-        });
-      }, 500);
-    }
-  };
-
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    const container = chatContainerRef.current;
+    if (!container) return;
+    const timer = setTimeout(() => {
+      container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [messages, chatStarted]);
 
   const initRecognition = () => {
     const SpeechRecognition =
