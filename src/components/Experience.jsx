@@ -101,6 +101,12 @@ export const Experience = () => {
   const handleUserInput = async (input) => {
     if (!input.trim() || requestControllerRef.current) return;
     const controller = new AbortController();
+    let timedOut = false;
+    let receivedReply = false;
+    const requestTimer = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, 40_000);
     requestControllerRef.current = controller;
     setIsTyping(true);
     stopResponseAudio();
@@ -123,10 +129,14 @@ export const Experience = () => {
         signal: controller.signal,
       });
 
-      if (!response.ok) throw new Error(`Chat request failed: ${response.status}`);
+      if (!response.ok) throw new Error(response.status === 503
+        ? "The AI service is busy right now. Please try again shortly."
+        : "Sorry, I couldn't get a response. Please try again.");
 
       const data = await response.json();
+      clearTimeout(requestTimer);
       if (controller.signal.aborted) return;
+      receivedReply = true;
       const replyText = data.text || "Sorry, I couldn't get a response.";
 
       setMessages((prev) => [
@@ -178,19 +188,22 @@ export const Experience = () => {
         setIsPlaying(false);
       }
     } catch (err) {
-      if (controller.signal.aborted) return;
+      if (controller.signal.aborted && !timedOut) return;
       stopResponseAudio();
       console.error("Backend error:", err);
-      setMessages((prev) => [
+      if (!receivedReply) setMessages((prev) => [
         ...prev.filter((msg) => msg !== waitMessage),
         {
           type: "ai",
-          text: "Sorry, I encountered an error. Please try again.",
+          text: timedOut
+            ? "The response took too long. Please try again shortly."
+            : err.message || "Sorry, I couldn't get a response. Please try again.",
         },
       ]);
       setTriggerTalking(false);
       setIsPlaying(false);
     } finally {
+      clearTimeout(requestTimer);
       if (requestControllerRef.current === controller) {
         requestControllerRef.current = null;
         setIsTyping(false);

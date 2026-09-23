@@ -1,6 +1,7 @@
 import { type Express } from "express";
 import nodemailer from "nodemailer";
 import { queryResume, chatWithGemini } from "./llm.js";
+import { withDeadline } from "./deadline.js";
 
 export function registerRoutes(app: Express) {
   app.post("/api/contact/send", async (req, res) => {
@@ -42,11 +43,15 @@ export function registerRoutes(app: Express) {
       return;
     }
     try {
-      const contextDocs = await queryResume(query.trim());
-      res.json(await chatWithGemini(query.trim(), contextDocs));
+      const started = performance.now();
+      const contextDocs = await withDeadline(() => queryResume(query.trim()), 10_000);
+      const contextReady = performance.now();
+      const reply = await chatWithGemini(query.trim(), contextDocs);
+      res.setHeader("Server-Timing", `context;dur=${(contextReady - started).toFixed(1)}, reply;dur=${(performance.now() - contextReady).toFixed(1)}`);
+      res.json(reply);
     } catch (error) {
-      console.error("Chat error:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+      console.error("Chat unavailable:", { name: (error as Error).name, status: (error as { status?: number }).status });
+      res.status(503).json({ error: "The AI service is busy right now. Please try again shortly." });
     }
   });
 }

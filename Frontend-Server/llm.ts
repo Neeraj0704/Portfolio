@@ -1,7 +1,8 @@
 import dotenv from "dotenv";
 import { pipeline, type FeatureExtractionPipeline } from "@xenova/transformers";
 import { Pinecone } from "@pinecone-database/pinecone";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, type GenerationConfig } from "@google/generative-ai";
+import { withDeadline } from "./deadline.js";
 
 dotenv.config();
 
@@ -34,7 +35,7 @@ export async function queryResume(queryText: string, topK = 5): Promise<string[]
   return results.matches.map((match) => (match.metadata as { text?: string })?.text || "");
 }
 
-export async function synthesizeSpeech(text: string): Promise<Buffer> {
+export async function synthesizeSpeech(text: string, signal = AbortSignal.timeout(6_000)): Promise<Buffer> {
   const response = await fetch("https://texttospeech.googleapis.com/v1/text:synthesize", {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Goog-Api-Key": requiredEnv("TEXT_TO_SPEECH_API") },
@@ -43,7 +44,7 @@ export async function synthesizeSpeech(text: string): Promise<Buffer> {
       voice: { languageCode: "en-US", ssmlGender: "MALE" },
       audioConfig: { audioEncoding: "MP3" },
     }),
-    signal: AbortSignal.timeout(30_000),
+    signal,
   });
   if (!response.ok) throw new Error(`TTS API request failed: ${response.status}`);
   const data = await response.json() as { audioContent?: string };
@@ -51,9 +52,33 @@ export async function synthesizeSpeech(text: string): Promise<Buffer> {
   return Buffer.from(data.audioContent, "base64");
 }
 
-export async function chatWithGemini(userQuery: string, contextDocs: string[]) {
+export async function generateReply(prompt: string): Promise<string> {
   const genAI = new GoogleGenerativeAI(requiredEnv("GEMINI_API_KEY"));
-  const textModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const models = ["gemini-2.5-flash-lite", "gemini-2.5-flash"];
+  // Short portfolio answers do not need a reasoning pass.
+  const generationConfig: GenerationConfig & { thinkingConfig: { thinkingBudget: number } } = {
+    thinkingConfig: { thinkingBudget: 0 },
+  };
+  for (const [index, model] of models.entries()) {
+    try {
+      return await withDeadline(async (signal) => {
+        const result = await genAI.getGenerativeModel({ model, generationConfig })
+          .generateContent(prompt, { signal });
+        const text = result.response.text().trim();
+        if (!text) throw new Error("AI returned no answer");
+        return text;
+      }, 8_000);
+    } catch (error) {
+      const status = (error as { status?: number }).status;
+      const transient = status === undefined || [404, 408, 429, 500, 502, 503, 504].includes(status);
+      if (!transient || index === models.length - 1) throw error;
+      console.warn("Chat model unavailable; trying fallback", { model, status: status ?? "timeout/network" });
+    }
+  }
+  throw new Error("AI service unavailable");
+}
+
+export async function chatWithGemini(userQuery: string, contextDocs: string[]) {
   const prompt = `You are an AI assistant on Neeraj's portfolio website. Follow these rules strictly:
 
 ### Persona & Style
@@ -75,8 +100,12 @@ ${contextDocs.join("\n\n")}
 User Question:
 ${userQuery}`;
 
-  const textResp = await textModel.generateContent(prompt);
-  const text = textResp.response.text();
-  const audio = await synthesizeSpeech(text);
-  return { text, audioBase64: audio.toString("base64"), audioMimeType: "audio/mpeg" };
+  const text = await generateReply(prompt);
+  try {
+    const audio = await withDeadline((signal) => synthesizeSpeech(text, signal), 6_000);
+    return { text, audioBase64: audio.toString("base64"), audioMimeType: "audio/mpeg" };
+  } catch {
+    console.warn("Chat speech unavailable; returning text answer");
+    return { text, audioBase64: null, audioMimeType: "audio/mpeg" };
+  }
 }
