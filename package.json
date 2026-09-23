@@ -10,7 +10,7 @@
     "build:server": "tsc -p tsconfig.build.json",
     "build": "npm run build:client && npm run build:server",
     "check": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.build.json",
-    "test": "npm run build && node --test tests/production.test.mjs",
+    "test": "npm run build && node --test tests/*.test.mjs",
     "preview": "vite preview",
     "clean": "rimraf dist build",
     "start": "node build/server/Frontend-Server/index.js"

@@ -1,10 +1,12 @@
 import React, { useRef, useEffect } from "react";
 import { useGLTF, useFBX, useAnimations } from "@react-three/drei";
-import { useGraph } from "@react-three/fiber";
+import { useFrame, useGraph } from "@react-three/fiber";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
+import { getMouthOpenness } from "../lib/lip-sync";
 
 function AvatarComponent(props) {
+  const { speechPlaybackRef, triggerTalking, triggerGreeting, triggerSalute, isTyping, ...groupProps } = props;
   const { scene } = useGLTF("/68994a8568086dd7c6759d42.glb");
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone);
@@ -25,6 +27,20 @@ function AvatarComponent(props) {
   headnodAnimation[0].name = "Headnod";
 
   const group = useRef();
+  const face = useRef();
+  const mouthIndex = nodes.Wolf3D_Avatar.morphTargetDictionary.mouthOpen;
+  const morphInfluences = React.useMemo(
+    () => [...nodes.Wolf3D_Avatar.morphTargetInfluences],
+    [nodes]
+  );
+
+  useFrame((_state, delta) => {
+    const influences = face.current?.morphTargetInfluences;
+    if (!influences || mouthIndex === undefined) return;
+    const target = getMouthOpenness(speechPlaybackRef?.current) * 0.85;
+    const speed = target > influences[mouthIndex] ? 35 : 22;
+    influences[mouthIndex] = THREE.MathUtils.damp(influences[mouthIndex], target, speed, delta);
+  });
   const clips = React.useMemo(
     () => [idleAnimation[0], greetAnimation[0], talkAnimation[0], saluteAnimation[0], headnodAnimation[0]],
     [idleAnimation, greetAnimation, talkAnimation, saluteAnimation, headnodAnimation]
@@ -47,15 +63,16 @@ function AvatarComponent(props) {
   }, [props.triggerGreeting, props.triggerTalking, props.triggerSalute, actions]);
 
   return (
-    <group {...props} dispose={null} ref={group}>
+    <group {...groupProps} dispose={null} ref={group}>
       <primitive object={nodes.Hips} />
       <skinnedMesh
+        ref={face}
         name="Wolf3D_Avatar"
         geometry={nodes.Wolf3D_Avatar.geometry}
         material={materials.Wolf3D_Avatar}
         skeleton={nodes.Wolf3D_Avatar.skeleton}
         morphTargetDictionary={nodes.Wolf3D_Avatar.morphTargetDictionary}
-        morphTargetInfluences={nodes.Wolf3D_Avatar.morphTargetInfluences}
+        morphTargetInfluences={morphInfluences}
       />
     </group>
   );

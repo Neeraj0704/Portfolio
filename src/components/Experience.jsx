@@ -1,9 +1,10 @@
 import { Environment, OrbitControls, Html } from "@react-three/drei";
 import { Avatar } from "./Avatar";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, MicOff, Send, MessageCircle, X } from "lucide-react";
 import { useMediaQuery } from "react-responsive";
+import { decodeSpeechEnvelope } from "../lib/lip-sync";
 
 export const Experience = () => {
   const [chatStarted, setChatStarted] = useState(false);
@@ -21,7 +22,33 @@ export const Experience = () => {
   const speechTimeoutRef = useRef(null);
   const chatContainerRef = useRef(null);
   const currentAudioRef = useRef(null);
+  const speechPlaybackRef = useRef(null);
+  const requestControllerRef = useRef(null);
+  const inputModeRef = useRef(inputMode);
   const isMobile = useMediaQuery({ maxWidth: 1023 });
+
+  const stopResponseAudio = useCallback(() => {
+    speechPlaybackRef.current = null;
+    const audio = currentAudioRef.current;
+    currentAudioRef.current = null;
+    if (audio) {
+      audio.onended = null;
+      audio.onerror = null;
+      audio.pause();
+      URL.revokeObjectURL(audio.src);
+    }
+  }, []);
+
+  useEffect(() => {
+    inputModeRef.current = inputMode;
+  }, [inputMode]);
+
+  useEffect(() => () => {
+    requestControllerRef.current?.abort();
+    recognitionRef.current?.abort();
+    clearTimeout(speechTimeoutRef.current);
+    stopResponseAudio();
+  }, [stopResponseAudio]);
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -78,7 +105,13 @@ export const Experience = () => {
   };
 
   const handleUserInput = async (input) => {
-    if (!input.trim()) return;
+    if (!input.trim() || requestControllerRef.current) return;
+    const controller = new AbortController();
+    requestControllerRef.current = controller;
+    setIsTyping(true);
+    stopResponseAudio();
+    setTriggerTalking(false);
+    setIsPlaying(false);
 
     // hide text prompts only after first input
     if (inputMode === "text" && showPrompts) setShowPrompts(false);
@@ -93,11 +126,13 @@ export const Experience = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: input }),
+        signal: controller.signal,
       });
 
       if (!response.ok) throw new Error(`Chat request failed: ${response.status}`);
 
       const data = await response.json();
+      if (controller.signal.aborted) return;
       const replyText = data.text || "Sorry, I couldn't get a response.";
 
       setMessages((prev) => [
@@ -105,42 +140,52 @@ export const Experience = () => {
         { type: "ai", text: replyText },
       ]);
 
-      if (currentAudioRef.current) {
-        currentAudioRef.current.pause();
-        URL.revokeObjectURL(currentAudioRef.current.src);
-        currentAudioRef.current = null;
-      }
-
       if (data.audioBase64) {
-        setTriggerTalking(true);
-        setIsPlaying(true);
-
         const audioBlob = new Blob(
           [Uint8Array.from(atob(data.audioBase64), (c) => c.charCodeAt(0))],
           { type: data.audioMimeType || "audio/mpeg" }
         );
+        let envelope = null;
+        try {
+          envelope = await decodeSpeechEnvelope(await audioBlob.arrayBuffer());
+        } catch (error) {
+          console.warn("Could not analyze speech audio:", error);
+        }
+        if (controller.signal.aborted) return;
         const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
         currentAudioRef.current = audio;
+        speechPlaybackRef.current = { audio, envelope };
 
-        await audio.play();
         audio.onended = () => {
+          stopResponseAudio();
           setTriggerTalking(false);
           setIsPlaying(false);
 
-          if (inputMode === "voice" && !listening) {
+          if (inputModeRef.current === "voice") {
             if (speechTimeoutRef.current)
               clearTimeout(speechTimeoutRef.current);
             speechTimeoutRef.current = setTimeout(() => {
-              startVoiceRecognition();
+              if (inputModeRef.current === "voice") startVoiceRecognition();
             }, 500);
           }
         };
+        audio.onerror = () => {
+          stopResponseAudio();
+          setTriggerTalking(false);
+          setIsPlaying(false);
+        };
+        await audio.play();
+        if (controller.signal.aborted) return;
+        setTriggerTalking(true);
+        setIsPlaying(true);
       } else {
         setTriggerTalking(false);
         setIsPlaying(false);
       }
     } catch (err) {
+      if (controller.signal.aborted) return;
+      stopResponseAudio();
       console.error("Backend error:", err);
       setMessages((prev) => [
         ...prev.filter((msg) => msg !== waitMessage),
@@ -151,6 +196,11 @@ export const Experience = () => {
       ]);
       setTriggerTalking(false);
       setIsPlaying(false);
+    } finally {
+      if (requestControllerRef.current === controller) {
+        requestControllerRef.current = null;
+        setIsTyping(false);
+      }
     }
   };
 
@@ -174,6 +224,10 @@ export const Experience = () => {
   };
 
   const handleBackClick = () => {
+    requestControllerRef.current?.abort();
+    requestControllerRef.current = null;
+    inputModeRef.current = "text";
+    setIsTyping(false);
     setChatStarted(false);
     setMessages([]);
     setInputMode("text");
@@ -183,10 +237,7 @@ export const Experience = () => {
     if (recognitionRef.current) recognitionRef.current.stop();
     setListening(false);
     if (speechTimeoutRef.current) clearTimeout(speechTimeoutRef.current);
-    if (currentAudioRef.current) {
-      currentAudioRef.current.pause();
-      currentAudioRef.current = null;
-    }
+    stopResponseAudio();
     setTriggerTalking(false);
     setIsPlaying(false);
   };
@@ -203,6 +254,7 @@ export const Experience = () => {
           triggerTalking={triggerTalking}
           triggerSalute={triggerSalute}
           isTyping={isTyping}
+          speechPlaybackRef={speechPlaybackRef}
         />
 
       {/* 🚀 Use lighter environment for faster loading */}
@@ -356,12 +408,12 @@ export const Experience = () => {
                       onChange={(e) => setTextInput(e.target.value)}
                       placeholder="Type your message..."
                       className="min-w-0 flex-1 bg-gray-700 text-white px-2 sm:px-3 py-1 sm:py-2 rounded border border-gray-600 focus:border-primary focus:outline-none text-xs sm:text-sm"
-                      disabled={isPlaying}
+                      disabled={isPlaying || isTyping}
                     />
                     <button
                       type="submit"
                       aria-label="Send message"
-                      disabled={!textInput.trim() || isPlaying}
+                      disabled={!textInput.trim() || isPlaying || isTyping}
                       className="bg-primary hover:bg-primary/80 disabled:bg-gray-600 text-white p-1 sm:p-2 rounded transition-colors"
                     >
                       <Send className="w-3 sm:w-4 h-3 sm:h-4" />
@@ -372,7 +424,7 @@ export const Experience = () => {
                     <button
                       onClick={startVoiceRecognition}
                       aria-label="Start voice input"
-                      disabled={listening || isPlaying}
+                      disabled={listening || isPlaying || isTyping}
                       className={`p-2 sm:p-3 rounded-full transition-colors ${
                         listening
                           ? "bg-red-500 animate-pulse"
