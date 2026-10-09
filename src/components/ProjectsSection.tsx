@@ -27,15 +27,15 @@ export default function ProjectsSection() {
       demo: "", // remove demo icon
     },
     {
-      id: "hospital-connect",
-      title: "Hospital Connect",
-      date: "Oct 2024",
+      id: "salesforce-metadata-impact",
+      title: "Salesforce Metadata Impact Analysis",
+      date: "",
       description:
-        "React.js-based healthcare platform enabling users to locate nearby hospitals, access real-time resource availability and virtual consultations with Google Maps APIs integration.",
-      image: "/download.webp",
-      technologies: ["React.js", "Google Maps API", "Firebase", "Real-time Chat"],
-      github: "", // remove GitHub icon
-      demo: "https://www.youtube.com/watch?v=FhRxT80_ZGg",
+        "Developed an AI-powered platform to explore relationships and dependencies between Salesforce components and understand the potential impact of changes. Orchestrated AI agents with LangGraph, analyzed metadata relationships in Neo4j, and built a FastAPI backend with AWS services and API integrations.",
+      image: "/assets/salesforce-metadata-impact.svg",
+      technologies: ["Salesforce", "LangGraph", "Neo4j", "FastAPI", "AWS"],
+      github: "",
+      demo: "",
     },
     {
       id: "facial-recognition",
@@ -88,12 +88,12 @@ export default function ProjectsSection() {
                   >
                     {project.title}
                   </h3>
-                  <span
+                  {project.date && <span
                     className="text-xs text-primary bg-primary/20 px-2 py-1 rounded-full"
                     data-testid={`text-project-date-${project.id}`}
                   >
                     {project.date}
-                  </span>
+                  </span>}
                 </div>
 
                 <p

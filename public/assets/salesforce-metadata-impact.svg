@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" role="img" aria-labelledby="title desc">
+  <title id="title">Salesforce metadata dependency graph</title>
+  <desc id="desc">Connected object, field, flow, and Apex components illustrate change impact analysis.</desc>
+  <rect width="600" height="300" fill="#0f172a"/>
+  <g fill="none" stroke="#38bdf8" stroke-width="3">
+    <path d="M300 140 130 85M300 140 470 85M300 140 140 225M300 140 460 225"/>
+    <path d="M130 85 140 225M470 85 460 225" stroke="#475569" stroke-dasharray="6 6"/>
+  </g>
+  <g fill="#1e293b" stroke="#38bdf8" stroke-width="2">
+    <rect x="70" y="60" width="120" height="50" rx="12"/>
+    <rect x="410" y="60" width="120" height="50" rx="12"/>
+    <rect x="80" y="200" width="120" height="50" rx="12"/>
+    <rect x="400" y="200" width="120" height="50" rx="12"/>
+    <rect x="225" y="110" width="150" height="60" rx="14" fill="#075985"/>
+  </g>
+  <g fill="#e0f2fe" font-family="Arial, sans-serif" font-size="17" text-anchor="middle">
+    <text x="130" y="91">Object</text>
+    <text x="470" y="91">Field</text>
+    <text x="140" y="231">Flow</text>
+    <text x="460" y="231">Apex</text>
+    <text x="300" y="137">Metadata</text>
+    <text x="300" y="157" font-size="14">Impact Analysis</text>
+  </g>
+</svg>
