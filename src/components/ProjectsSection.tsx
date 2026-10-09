@@ -34,7 +34,7 @@ export default function ProjectsSection() {
         "Developed an AI-powered platform to explore relationships and dependencies between Salesforce components and understand the potential impact of changes. Orchestrated AI agents with LangGraph, analyzed metadata relationships in Neo4j, and built a FastAPI backend with AWS services and API integrations.",
       image: "/assets/salesforce-metadata-impact.svg",
       technologies: ["Salesforce", "LangGraph", "Neo4j", "FastAPI", "AWS"],
-      github: "",
+      github: "https://github.com/Neeraj0704/Salesforce-Metadata-Impact-Analysis-System-v2",
       demo: "",
     },
     {
