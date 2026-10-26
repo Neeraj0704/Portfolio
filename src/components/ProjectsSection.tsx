@@ -3,15 +3,37 @@ import { Github, ExternalLink } from "lucide-react";
 export default function ProjectsSection() {
   const projects = [
     {
+      id: "salesforce-metadata-impact",
+      title: "Salesforce Metadata Impact Analysis",
+      date: "Sep 2026",
+      description:
+        "Built an agentic AI system with LangGraph and LLM orchestration for multi-step metadata impact analysis. Designed a compute-to-data architecture with Neo4j dependency graphs, structured tools, and FastAPI, integrating Pydantic, OAuth, Salesforce Metadata APIs, Supabase, and AWS.",
+      image: "/assets/salesforce-metadata-impact.svg",
+      technologies: ["LangGraph", "Neo4j", "FastAPI", "Pydantic", "OAuth", "Supabase", "AWS"],
+      github: "https://github.com/Neeraj0704/Salesforce-Metadata-Impact-Analysis-System-v2",
+      demo: "",
+    },
+    {
+      id: "agent-orchestration",
+      title: "Autonomous Agent Orchestration Platform",
+      date: "Jan 2026",
+      description:
+        "Architected a supervision platform for autonomous AI voice agents using locally hosted LLMs through Ollama and an MCP control plane. Integrated telephony, transcription, RAG, and telemetry for call outcomes, summaries, latency, and cost, enabling human-in-the-loop analysis and iterative agent evaluation.",
+      image: "https://i.ytimg.com/vi/HgFAyStXSSI/hqdefault.jpg",
+      technologies: ["Ollama", "MCP", "RAG", "Voice Agents", "Agent Evaluation"],
+      github: "",
+      demo: "https://www.youtube.com/watch?v=HgFAyStXSSI",
+    },
+    {
       id: "ai-avatar",
       title: "AI Conversational Avatar",
       date: "Aug 2025",
       description:
-        "Developed an AI-powered 3D avatar integrating LLMs (Gemini) for voice-enabled intelligent interactions, backed by RAG pipelines with Pinecone vector database for semantic context retrieval.",
+        "Developed a Gemini-powered 3D portfolio avatar with voice-enabled interactions and audio-driven lip sync. Originally built with Pinecone retrieval, the current version uses bundled resume context to keep answers current without a remote retrieval delay.",
       image:
         "/assets/conversational-avatar.svg",
-      technologies: ["LLMs (Gemini)", "Pinecone", "RAG", "TTS/STT"],
-      github: "",
+      technologies: ["Gemini", "React Three Fiber", "Resume Context", "TTS/STT"],
+      github: "https://github.com/Neeraj0704/Portfolio",
       demo: "#home",
     },
     {
@@ -25,17 +47,6 @@ export default function ProjectsSection() {
       technologies: ["React.js", "Node.js", "OpenAI GPT-4o", "Tailwind CSS"],
       github: "https://github.com/Neeraj0704/FixMyIOT",
       demo: "", // remove demo icon
-    },
-    {
-      id: "salesforce-metadata-impact",
-      title: "Salesforce Metadata Impact Analysis",
-      date: "",
-      description:
-        "Developed an AI-powered platform to explore relationships and dependencies between Salesforce components and understand the potential impact of changes. Orchestrated AI agents with LangGraph, analyzed metadata relationships in Neo4j, and built a FastAPI backend with AWS services and API integrations.",
-      image: "/assets/salesforce-metadata-impact.svg",
-      technologies: ["Salesforce", "LangGraph", "Neo4j", "FastAPI", "AWS"],
-      github: "https://github.com/Neeraj0704/Salesforce-Metadata-Impact-Analysis-System-v2",
-      demo: "",
     },
     {
       id: "facial-recognition",
@@ -81,7 +92,7 @@ export default function ProjectsSection() {
               </div>
 
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-start justify-between gap-2">
                   <h3
                     className="text-xl font-bold text-foreground"
                     data-testid={`text-project-title-${project.id}`}
@@ -89,7 +100,7 @@ export default function ProjectsSection() {
                     {project.title}
                   </h3>
                   {project.date && <span
-                    className="text-xs text-primary bg-primary/20 px-2 py-1 rounded-full"
+                    className="shrink-0 text-xs text-primary bg-primary/20 px-2 py-1 rounded-full"
                     data-testid={`text-project-date-${project.id}`}
                   >
                     {project.date}
@@ -119,6 +130,8 @@ export default function ProjectsSection() {
                   {project.github && (
                     <a
                       href={project.github}
+                      aria-label={`View ${project.title} on GitHub`}
+                      title={`View ${project.title} on GitHub`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:text-foreground transition-colors"
@@ -131,6 +144,8 @@ export default function ProjectsSection() {
                     project.demo.startsWith("#") ? (
                       <a
                         href={project.demo}
+                        aria-label={`Try ${project.title}`}
+                        title={`Try ${project.title}`}
                         onClick={(e) => {
                           e.preventDefault();
                           const el = document.querySelector(project.demo);
@@ -144,6 +159,8 @@ export default function ProjectsSection() {
                     ) : (
                       <a
                         href={project.demo}
+                        aria-label={`Watch ${project.title} demo`}
+                        title={`Watch ${project.title} demo`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-primary hover:text-foreground transition-colors"

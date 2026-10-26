@@ -1,11 +1,27 @@
 import assert from "node:assert/strict";
 import { beforeEach, test } from "node:test";
 import { withDeadline } from "../build/server/Frontend-Server/deadline.js";
-import { generateReply, chatWithGemini } from "../build/server/Frontend-Server/llm.js";
+import { generateReply, chatWithGemini, queryResume } from "../build/server/Frontend-Server/llm.js";
 
 const reply = "Neeraj works with Python and React. His projects include AI and web applications.";
 const answer = () => Response.json({
   candidates: [{ content: { role: "model", parts: [{ text: reply }] }, finishReason: "STOP" }],
+});
+
+test("resume answers use current bundled facts without a remote retrieval request", async (t) => {
+  const fetchMock = t.mock.method(globalThis, "fetch", () => {
+    throw new Error("Resume context must not make a network request");
+  });
+  const context = await queryResume("Where does Neeraj work and when does he graduate?");
+  const text = context.join("\n");
+  assert.match(text, /AI Scientist Intern at SAP Labs/);
+  assert.match(text, /Expected graduation: December 2026/);
+  assert.match(text, /GPA: 4.0 \/ 4.0/);
+  assert.match(text, /Autonomous Agent Orchestration Platform/);
+  assert.doesNotMatch(text, /May,? 2027|Hospital Connect|Panic Shield/);
+  assert.equal(fetchMock.mock.callCount(), 0);
+  context.length = 0;
+  assert.ok((await queryResume("projects")).length > 0);
 });
 
 beforeEach((t) => {

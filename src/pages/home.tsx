@@ -21,7 +21,7 @@ export default function Home() {
       <footer className="py-8 border-t border-border">
         <div className="container mx-auto px-6 text-center">
           <p className="text-muted-foreground">
-            © 2025 Neeraj V Pattanashetti. All rights reserved.
+            © {new Date().getFullYear()} Neeraj V Pattanashetti. All rights reserved.
           </p>
         </div>
       </footer>

@@ -1,12 +1,9 @@
 import dotenv from "dotenv";
-import { pipeline, type FeatureExtractionPipeline } from "@xenova/transformers";
-import { Pinecone } from "@pinecone-database/pinecone";
 import { GoogleGenerativeAI, type GenerationConfig } from "@google/generative-ai";
 import { withDeadline } from "./deadline.js";
+import { resumeContext } from "./resume-context.js";
 
 dotenv.config();
-
-let embedder: Promise<FeatureExtractionPipeline> | undefined;
 
 function requiredEnv(name: string): string {
   const value = process.env[name];
@@ -14,25 +11,9 @@ function requiredEnv(name: string): string {
   return value;
 }
 
-async function getEmbedding(text: string): Promise<number[]> {
-  // Share the initial model load between concurrent requests.
-  embedder ??= pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2").catch((error) => {
-    embedder = undefined;
-    throw error;
-  });
-  const model = await embedder;
-  const output = await model(text, { pooling: "mean", normalize: true });
-  const embedding = Array.from(output.data as Float32Array);
-  if (embedding.length !== 384) throw new Error(`Unexpected embedding length: ${embedding.length}`);
-  return embedding;
-}
-
-export async function queryResume(queryText: string, topK = 5): Promise<string[]> {
-  const pc = new Pinecone({ apiKey: requiredEnv("PINECONE_API_KEY") });
-  const index = pc.Index(requiredEnv("PINECONE_INDEX"));
-  const vector = await getEmbedding(queryText);
-  const results = await index.query({ vector, topK, includeMetadata: true });
-  return results.matches.map((match) => (match.metadata as { text?: string })?.text || "");
+export async function queryResume(_queryText: string): Promise<string[]> {
+  // The resume is small enough to include in full; no embedding download or remote lookup is needed.
+  return [...resumeContext];
 }
 
 export async function synthesizeSpeech(text: string, signal = AbortSignal.timeout(6_000)): Promise<Buffer> {
@@ -87,6 +68,7 @@ export async function chatWithGemini(userQuery: string, contextDocs: string[]) {
 - Be concise: 2 sentences only, never shorter or longer.
 
 ### Content Rules
+- Use only the supplied resume and portfolio facts. Never invent employment, dates, metrics, goals, or credentials.
 - Projects: Always highlight projects that are relevant first.
 - Skills: Mention only the top 3-4 important skills (e.g., Python, Java, React, Node.js, TypeScript) naturally, without listing everything.
 - Favorite food or color: reply humorously in a complete sentence.

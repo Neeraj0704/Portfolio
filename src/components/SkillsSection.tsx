@@ -1,4 +1,4 @@
-import { Code, Brain, Database, Cloud, Server, FileText, Wrench } from "lucide-react";
+import { Code, Brain, Cloud, Server } from "lucide-react";
 
 export default function SkillsSection() {
   const skillCategories = [
@@ -8,76 +8,35 @@ export default function SkillsSection() {
       skills: [
         "Python",
         "Java",
-        "C++",
+        "SQL",
         "C#",
-        "TypeScript",
         "JavaScript",
-        "Swift (basic)",
       ],
       colorClass: "bg-primary/20 text-primary",
     },
     {
-      title: "Frameworks",
+      title: "Backend & Data",
       icon: <Server className="text-sky-400" />,
-      skills: ["Node.js", "Express", "React.js", "TensorFlow", "PyTorch"],
+      skills: ["FastAPI", "Pydantic", "REST APIs", "OAuth", "WebSockets", "PostgreSQL", "MySQL", "Neo4j", "Supabase"],
       colorClass: "bg-sky-500/20 text-sky-400",
     },
     {
-      title: "Systems & Cloud",
+      title: "Cloud & Tools",
       icon: <Cloud className="text-cyan-400" />,
       skills: [
-        "AWS",
-        "Firebase",
-        "CI/CD",
+        "AWS EC2", "AWS S3", "AWS Lambda", "API Gateway", "IAM",
         "Docker",
-        "Microservices",
-        "Distributed Systems",
+        "Git", "Maven", "Langfuse", "Ollama",
       ],
       colorClass: "bg-cyan-500/20 text-cyan-400",
     },
     {
-      title: "AI / Machine Learning",
+      title: "Agentic AI & Machine Learning",
       icon: <Brain className="text-green-400" />,
       skills: [
-        "Large Language Models (LLMs)",
-        "Conversational AI",
-        "LangChain",
-        "API",
-        "Reinforcement Learning",
-        "Ray",
-        "Deep Learning",
+        "LangGraph", "LLM Orchestration", "MCP", "RAG", "NLP", "PyTorch", "TensorFlow",
       ],
       colorClass: "bg-green-500/20 text-green-400",
-    },
-    {
-      title: "Databases",
-      icon: <Database className="text-purple-400" />,
-      skills: ["SQL", "NoSQL (Firebase Realtime DB)", "Data Modelling"],
-      colorClass: "bg-purple-500/20 text-purple-400",
-    },
-    {
-      title: "Communication",
-      icon: <FileText className="text-amber-400" />,
-      skills: [
-        "Technical Documentation",
-        "Research Writing",
-        "Cross-functional Collaboration",
-      ],
-      colorClass: "bg-amber-500/20 text-amber-400",
-    },
-    {
-      title: "Tools / Other",
-      icon: <Wrench className="text-rose-400" />,
-      skills: [
-        "Agile",
-        "Jira",
-        "Debugging",
-        "Version Control",
-        "Testing Automation",
-        "Docker",
-        "Unity 2D/3D",
-      ],
-      colorClass: "bg-rose-500/20 text-rose-400",
     },
   ];
 

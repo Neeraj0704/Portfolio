@@ -1,35 +1,17 @@
 import dotenv from "dotenv";
-import { pipeline } from "@xenova/transformers";
-import { Pinecone } from "@pinecone-database/pinecone";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { withDeadline } from "./deadline.js";
+import { resumeContext } from "./resume-context.js";
 dotenv.config();
-let embedder;
 function requiredEnv(name) {
     const value = process.env[name];
     if (!value)
         throw new Error(`Missing ${name} environment variable`);
     return value;
 }
-async function getEmbedding(text) {
-    // Share the initial model load between concurrent requests.
-    embedder ??= pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2").catch((error) => {
-        embedder = undefined;
-        throw error;
-    });
-    const model = await embedder;
-    const output = await model(text, { pooling: "mean", normalize: true });
-    const embedding = Array.from(output.data);
-    if (embedding.length !== 384)
-        throw new Error(`Unexpected embedding length: ${embedding.length}`);
-    return embedding;
-}
-export async function queryResume(queryText, topK = 5) {
-    const pc = new Pinecone({ apiKey: requiredEnv("PINECONE_API_KEY") });
-    const index = pc.Index(requiredEnv("PINECONE_INDEX"));
-    const vector = await getEmbedding(queryText);
-    const results = await index.query({ vector, topK, includeMetadata: true });
-    return results.matches.map((match) => match.metadata?.text || "");
+export async function queryResume(_queryText) {
+    // The resume is small enough to include in full; no embedding download or remote lookup is needed.
+    return [...resumeContext];
 }
 export async function synthesizeSpeech(text, signal = AbortSignal.timeout(6_000)) {
     const response = await fetch("https://texttospeech.googleapis.com/v1/text:synthesize", {
@@ -86,6 +68,7 @@ export async function chatWithGemini(userQuery, contextDocs) {
 - Be concise: 2 sentences only, never shorter or longer.
 
 ### Content Rules
+- Use only the supplied resume and portfolio facts. Never invent employment, dates, metrics, goals, or credentials.
 - Projects: Always highlight projects that are relevant first.
 - Skills: Mention only the top 3-4 important skills (e.g., Python, Java, React, Node.js, TypeScript) naturally, without listing everything.
 - Favorite food or color: reply humorously in a complete sentence.

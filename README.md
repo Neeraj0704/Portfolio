@@ -42,8 +42,12 @@ for compatibility with the existing Render deployment, so include regenerated
 For local development, run `npm run build:server` and `npm start` alongside
 `npm run dev`. The Vite API proxy targets the server on port 3000.
 
-Chat requires `PINECONE_API_KEY`, `PINECONE_INDEX`, `GEMINI_API_KEY`,
-and `TEXT_TO_SPEECH_API` in the hosting environment. The optional contact
+Chat uses the current resume facts in `Frontend-Server/resume-context.ts`,
+bundled with each deployment. Update that file and the public resume PDF together
+when experience, education, or projects change. It no longer queries the older
+Pinecone index or downloads an embedding model for resume questions.
+
+Chat requires `GEMINI_API_KEY` and `TEXT_TO_SPEECH_API` in the hosting environment. The optional contact
 endpoint uses `SMTP_APP_PASSWORD` and optionally `SMTP_USER`; the contact
 form is currently hidden. Never commit credentials.
 

@@ -23,17 +23,22 @@ export default function AboutSection() {
             
             <div className="md:col-span-2 space-y-6">
               <p className="text-lg text-muted leading-relaxed" data-testid="text-bio">
-                I'm a passionate Software Engineer and AI enthusiast currently pursuing my Master's in Computer Science 
-                at the University of Illinois Chicago. With experience in full-stack development, machine learning, 
-                and 3D graphics, I love building innovative solutions that bridge technology and user experience.
+                I'm Neeraj Vijayakumar Pattanashetti, a Computer Science master's student at the University of Illinois at Chicago, with a 4.0 GPA and expected graduation in December 2026.
+                As an AI Scientist Intern at SAP Labs, I build evaluation systems for enterprise AI agents and investigate the traces behind their failures.
+                Previously, at KreedaLoka, I developed real-time backend systems supporting more than 100 concurrent users and reduced data-retrieval latency by 40%.
+                My Salesforce Metadata Impact Analysis System brings together LangGraph orchestration, Neo4j dependency graphs, and a FastAPI backend.
+                I also built an autonomous voice-agent supervision platform using Ollama and MCP, with telemetry for human-in-the-loop evaluation.
+                Across these projects, my work focuses on agent reliability, explainable workflows, and the backend systems that make them possible.
+                After graduation, I want to work as an AI Scientist focused on agentic AI and LLMs, particularly agent orchestration and evaluation.
               </p>
               
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <h3 className="text-primary font-semibold mb-2">Education</h3>
                   <p className="text-foreground" data-testid="text-education-degree">MS Computer Science</p>
-                  <p className="text-sm text-muted-foreground" data-testid="text-education-school">University of Illinois Chicago</p>
-                  <p className="text-sm text-muted-foreground" data-testid="text-education-dates">2025 - 2027</p>
+                  <p className="text-sm text-muted-foreground" data-testid="text-education-school">University of Illinois at Chicago</p>
+                  <p className="text-sm text-muted-foreground" data-testid="text-education-dates">Expected December 2026</p>
+                  <p className="text-sm text-muted-foreground" data-testid="text-education-gpa">GPA: 4.0 / 4.0</p>
                 </div>
                 <div>
                   <h3 className="text-primary font-semibold mb-2">Location</h3>

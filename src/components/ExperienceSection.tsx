@@ -1,5 +1,4 @@
 import { Code, Check, BookOpen } from "lucide-react";
-import { Button } from "./ui/button";
 
 export default function ExperienceSection() {
   return (
@@ -21,14 +20,43 @@ export default function ExperienceSection() {
             <div className="absolute left-8 top-0 bottom-0 w-px bg-primary/30"></div>
 
             <div className="space-y-12">
+              <div className="relative flex items-start gap-3 sm:gap-8">
+                <div className="w-10 h-10 sm:w-16 sm:h-16 shrink-0 bg-primary/20 rounded-full flex items-center justify-center border-4 border-primary/30">
+                  <Code className="text-primary" />
+                </div>
+                <div className="min-w-0 flex-1 glass-morphism p-4 sm:p-8 rounded-xl" data-testid="card-experience-sap">
+                  <div className="flex flex-col md:flex-row md:justify-between gap-3 mb-4">
+                    <div>
+                      <h3 className="text-2xl font-bold">AI Scientist Intern</h3>
+                      <p className="text-primary font-medium">SAP Labs</p>
+                    </div>
+                    <div className="md:text-right text-muted-foreground">
+                      <p>May 2026 - Present</p>
+                      <p className="text-sm">Palo Alto, USA</p>
+                    </div>
+                  </div>
+                  <ul className="list-disc pl-5 space-y-3 text-muted leading-relaxed">
+                    <li>Built an enterprise AI-agent evaluation system with a structured rubric-generation pipeline spanning intent analysis, fact classification, and critic-based validation.</li>
+                    <li>Used evaluation results to refine agent behavior and skills across retrieval, lookup, filtering, conditional, and time-sensitive tasks.</li>
+                    <li>Analyzed agent traces, tool calls, generated requests, and execution paths to distinguish agent failures from evaluation-system failures.</li>
+                    <li>Resolved per-request user-context and metadata-propagation issues that caused authentication and execution failures.</li>
+                    <li>Designed LLM-judge evaluation strategies for large JSON inputs using compact profiling, context control, and structured preprocessing.</li>
+                  </ul>
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {["Agent Evaluation", "LLM Judges", "Trace Analysis", "Agent Optimization"].map((skill) => (
+                      <span key={skill} className="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm">{skill}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
               {/* Experience Card */}
-              <div className="relative flex items-start space-x-8">
-                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center border-4 border-primary/30">
+              <div className="relative flex items-start gap-3 sm:gap-8">
+                <div className="w-10 h-10 sm:w-16 sm:h-16 shrink-0 bg-primary/20 rounded-full flex items-center justify-center border-4 border-primary/30">
                   <Code className="text-primary text-xl" />
                 </div>
 
                 <div
-                  className="flex-1 glass-morphism p-8 rounded-xl"
+                  className="min-w-0 flex-1 glass-morphism p-4 sm:p-8 rounded-xl"
                   data-testid="card-experience-kreedloka"
                 >
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
@@ -37,7 +65,7 @@ export default function ExperienceSection() {
                         className="text-2xl font-bold text-foreground"
                         data-testid="text-job-title"
                       >
-                        Software Engineer Intern
+                        Software Engineering Intern
                       </h3>
                       <p
                         className="text-primary font-medium"
@@ -46,7 +74,7 @@ export default function ExperienceSection() {
                         KreedaLoka
                       </p>
                     </div>
-                    <div className="text-right">
+                    <div className="md:text-right">
                       <p
                         className="text-muted-foreground"
                         data-testid="text-dates"
@@ -79,8 +107,9 @@ export default function ExperienceSection() {
                           className="text-muted"
                           data-testid="text-achievement-1"
                         >
-                          Integrated Arena mode using Java (SERVER), C#, and
-                          Unity2D (CLIENT)
+                          Engineered real-time backend systems with Java, C#/.NET,
+                          and WebSockets, supporting 100+ concurrent users with
+                          low-latency state synchronization and gameplay updates.
                         </p>
                       </div>
                       <div className="flex items-start space-x-2">
@@ -89,8 +118,8 @@ export default function ExperienceSection() {
                           className="text-muted"
                           data-testid="text-achievement-2"
                         >
-                          Enhanced user engagement and significantly increased
-                          the user base
+                          Optimized relational schemas, SQL queries, and tournament-matching
+                          workflows, reducing retrieval latency by 40% under concurrent load.
                         </p>
                       </div>
                     </div>
@@ -103,7 +132,7 @@ export default function ExperienceSection() {
                         C#
                       </span>
                       <span className="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm">
-                        Unity2D
+                        WebSockets / SQL
                       </span>
                     </div>
                   </div>
@@ -111,12 +140,12 @@ export default function ExperienceSection() {
               </div>
 
               {/* Publications Card */}
-              <div className="relative flex items-start space-x-8">
-                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center border-4 border-primary/30">
+              <div className="relative flex items-start gap-3 sm:gap-8">
+                <div className="w-10 h-10 sm:w-16 sm:h-16 shrink-0 bg-primary/20 rounded-full flex items-center justify-center border-4 border-primary/30">
                   <BookOpen className="text-primary text-xl" />
                 </div>
 
-                <div className="flex-1 glass-morphism p-8 rounded-xl">
+                <div className="min-w-0 flex-1 glass-morphism p-4 sm:p-8 rounded-xl">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
                     <div>
                       <h3 className="text-2xl font-bold text-foreground">

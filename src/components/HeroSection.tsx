@@ -28,11 +28,12 @@ export default function HeroSection() {
                 Hi, I'm <span className="text-primary">Neeraj</span>
               </h1>
               <p className="text-xl md:text-2xl text-muted-foreground">
-                Software Engineer and AI Enthusiast
+                AI Scientist Intern at SAP Labs
               </p>
               <p className="text-lg text-muted leading-relaxed max-w-lg">
-                Passionate about creating intelligent solutions through cutting-edge technology.
-                I specialize in full-stack development, machine learning, and building immersive 3D experiences.
+                I build and evaluate AI agents, from enterprise evaluation systems
+                to real-time voice platforms. My work spans agent orchestration,
+                graph-based retrieval, and reliable backend systems.
               </p>
             </div>
 
@@ -55,6 +56,8 @@ export default function HeroSection() {
             <div className="flex space-x-6 text-2xl">
               <a
                 href="https://www.linkedin.com/in/neeraj-vijayakumar-pattanashetti-613305239/"
+                aria-label="LinkedIn profile"
+                title="LinkedIn profile"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted hover:text-primary transition-colors"
@@ -63,6 +66,8 @@ export default function HeroSection() {
               </a>
               <a
                 href="https://github.com/Neeraj0704?tab=repositories"
+                aria-label="GitHub repositories"
+                title="GitHub repositories"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted hover:text-primary transition-colors"
@@ -71,6 +76,8 @@ export default function HeroSection() {
               </a>
               <a
                 href="mailto:neerajvpattanashetti@gmail.com"
+                aria-label="Email Neeraj"
+                title="Email Neeraj"
                 className="text-muted hover:text-primary transition-colors"
               >
                 <Mail />
