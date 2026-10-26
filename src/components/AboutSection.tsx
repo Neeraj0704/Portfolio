@@ -13,7 +13,7 @@ export default function AboutSection() {
             <div className="md:col-span-1 flex justify-center">
   <div className="w-60 aspect-square overflow-hidden border-4 border-primary/20 rounded-lg shadow-lg">
     <img
-      src="/1752865321131.jpeg"
+      src="/assets/profile-blue-gray.webp"
       alt="Neeraj smiling in a white shirt and black tie"
       className="w-full h-full object-cover object-top origin-top scale-[1.65]"
       data-testid="img-profile"
