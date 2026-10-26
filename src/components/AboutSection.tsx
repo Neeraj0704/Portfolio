@@ -11,11 +11,11 @@ export default function AboutSection() {
           
           <div className="grid md:grid-cols-3 gap-8 items-center">
             <div className="md:col-span-1 flex justify-center">
-  <div className="w-70 h-70 overflow-hidden border-4 border-primary/20 rounded-lg shadow-lg">
+  <div className="w-60 aspect-square overflow-hidden border-4 border-primary/20 rounded-lg shadow-lg">
     <img
       src="/1752865321131.jpeg"
-      alt="Professional headshot"
-      className="w-full h-full object-cover"
+      alt="Neeraj smiling in a white shirt and black tie"
+      className="w-full h-full object-cover object-top origin-top scale-[1.65]"
       data-testid="img-profile"
     />
   </div>
@@ -26,7 +26,7 @@ export default function AboutSection() {
                 I'm Neeraj Vijayakumar Pattanashetti, a Computer Science master's student at the University of Illinois at Chicago, with a 4.0 GPA and expected graduation in December 2026.
                 As an AI Scientist Intern at SAP Labs, I build evaluation systems for enterprise AI agents and investigate the traces behind their failures.
                 Previously, at KreedaLoka, I developed real-time backend systems supporting more than 100 concurrent users and reduced data-retrieval latency by 40%.
-                My Salesforce Metadata Impact Analysis System brings together LangGraph orchestration, Neo4j dependency graphs, and a FastAPI backend.
+                My Salesforce Metadata Impact Analysis project explores component dependencies using Neo4j graphs and a FastAPI backend.
                 I also built an autonomous voice-agent supervision platform using Ollama and MCP, with telemetry for human-in-the-loop evaluation.
                 Across these projects, my work focuses on agent reliability, explainable workflows, and the backend systems that make them possible.
                 After graduation, I want to work as an AI Scientist focused on agentic AI and LLMs, particularly agent orchestration and evaluation.

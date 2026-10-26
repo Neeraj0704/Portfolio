@@ -1,4 +1,5 @@
-import { Github, ExternalLink } from "lucide-react";
+import { Github, ExternalLink, BookOpen } from "lucide-react";
+import AvatarCaseStudy from "./AvatarCaseStudy";
 
 export default function ProjectsSection() {
   const projects = [
@@ -7,9 +8,9 @@ export default function ProjectsSection() {
       title: "Salesforce Metadata Impact Analysis",
       date: "Sep 2026",
       description:
-        "Built an agentic AI system with LangGraph and LLM orchestration for multi-step metadata impact analysis. Designed a compute-to-data architecture with Neo4j dependency graphs, structured tools, and FastAPI, integrating Pydantic, OAuth, Salesforce Metadata APIs, Supabase, and AWS.",
+        "Developed a backend prototype for Salesforce metadata impact analysis using FastAPI, Neo4j, OAuth, and isolated Docker sessions. The public version retrieves and parses metadata, traces dependencies, and explains risk for a specified component change. Conversational AI, automatic change detection, and a web application remain on its roadmap.",
       image: "/assets/salesforce-metadata-impact.svg",
-      technologies: ["LangGraph", "Neo4j", "FastAPI", "Pydantic", "OAuth", "Supabase", "AWS"],
+      technologies: ["Salesforce Metadata API", "Neo4j", "FastAPI", "Docker", "OAuth"],
       github: "https://github.com/Neeraj0704/Salesforce-Metadata-Impact-Analysis-System-v2",
       demo: "",
     },
@@ -31,7 +32,7 @@ export default function ProjectsSection() {
       description:
         "Developed a Gemini-powered 3D portfolio avatar with voice-enabled interactions and audio-driven lip sync. Originally built with Pinecone retrieval, the current version uses bundled resume context to keep answers current without a remote retrieval delay.",
       image:
-        "/assets/conversational-avatar.svg",
+        "/assets/avatar-case-study/interface.jpg",
       technologies: ["Gemini", "React Three Fiber", "Resume Context", "TTS/STT"],
       github: "https://github.com/Neeraj0704/Portfolio",
       demo: "#home",
@@ -127,6 +128,11 @@ export default function ProjectsSection() {
                 </div>
 
                 <div className="flex space-x-4 pt-2">
+                  {project.id === "ai-avatar" && (
+                    <a href="#avatar-case-study" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
+                      <BookOpen className="h-4 w-4" aria-hidden="true" /> Case study
+                    </a>
+                  )}
                   {project.github && (
                     <a
                       href={project.github}
@@ -175,6 +181,7 @@ export default function ProjectsSection() {
             </div>
           ))}
         </div>
+        <AvatarCaseStudy />
       </div>
     </section>
   );

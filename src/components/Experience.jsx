@@ -256,8 +256,8 @@ export const Experience = () => {
       )}
 
         <Avatar
-          position={isMobile ? [0, 0, 4] : [0.95, -2.5, 4]}
-          scale={isMobile ? 1.5 : 2}
+          position={isMobile ? [0, -0.8, 4] : [0.95, -2.5, 4]}
+          scale={isMobile ? 1.3 : 2}
           triggerTalking={triggerTalking}
           triggerSalute={triggerSalute}
           isTyping={isTyping}

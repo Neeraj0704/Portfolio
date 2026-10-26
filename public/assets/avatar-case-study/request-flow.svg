@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="720" viewBox="0 0 1000 720" role="img" aria-labelledby="title description">
+  <title id="title">Implemented avatar request and audio flow</title>
+  <desc id="description">A visitor question goes to Express with bundled resume context, then Gemini generates text and Google Text-to-Speech produces MP3 audio. The browser analyzes audio energy and animates the avatar's mouth during playback. Speech failure preserves the text answer.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#52606d"/></marker>
+  </defs>
+  <rect width="1000" height="720" fill="#f8fafb"/>
+  <g font-family="Arial, sans-serif" fill="#17212b">
+    <text x="42" y="50" font-size="28" font-weight="700">AI Conversational Avatar</text>
+    <text x="42" y="80" font-size="18" fill="#52606d">Implemented flow, documented from the portfolio source</text>
+    <g stroke="#52606d" stroke-width="2.5" fill="none" marker-end="url(#arrow)">
+      <path d="M455 175H540"/>
+      <path d="M750 240V300"/>
+      <path d="M545 375H460"/>
+      <path d="M250 440V500"/>
+      <path d="M455 575H540"/>
+    </g>
+    <rect x="40" y="110" width="415" height="130" rx="8" fill="#e7efff" stroke="#93b3e8"/>
+    <text x="62" y="143" font-size="22" font-weight="700">1. Visitor question</text>
+    <text x="62" y="176" font-size="18">Text input or browser speech recognition</text>
+    <text x="62" y="205" font-size="18">React sends POST /api/chat</text>
+    <rect x="545" y="110" width="415" height="130" rx="8" fill="#e5f5ef" stroke="#87bdaa"/>
+    <text x="567" y="143" font-size="22" font-weight="700">2. Express + resume facts</text>
+    <text x="567" y="176" font-size="18">Validate the question; load bundled context</text>
+    <text x="567" y="205" font-size="18">No remote vector lookup in this version</text>
+    <rect x="545" y="310" width="415" height="130" rx="8" fill="#fff3d8" stroke="#d6b467"/>
+    <text x="567" y="343" font-size="22" font-weight="700">3. Gemini generates the reply</text>
+    <text x="567" y="376" font-size="18">Flash-Lite first; Flash fallback</text>
+    <text x="567" y="405" font-size="18">Each attempt has an 8-second deadline</text>
+    <rect x="40" y="310" width="415" height="130" rx="8" fill="#fff3d8" stroke="#d6b467"/>
+    <text x="62" y="343" font-size="22" font-weight="700">4. Google Text-to-Speech</text>
+    <text x="62" y="376" font-size="18">Server requests MP3 audio for the reply</text>
+    <text x="62" y="405" font-size="18">6-second deadline; text survives failure</text>
+    <rect x="40" y="510" width="415" height="130" rx="8" fill="#e7efff" stroke="#93b3e8"/>
+    <text x="62" y="543" font-size="22" font-weight="700">5. Browser audio playback</text>
+    <text x="62" y="576" font-size="18">Show text; decode MP3 into 20 ms frames</text>
+    <text x="62" y="605" font-size="18">Normalize audio energy into an envelope</text>
+    <rect x="545" y="510" width="415" height="130" rx="8" fill="#e5f5ef" stroke="#87bdaa"/>
+    <text x="567" y="543" font-size="22" font-weight="700">6. Three.js mouth animation</text>
+    <text x="567" y="576" font-size="18">Sample the envelope at audio.currentTime</text>
+    <text x="567" y="605" font-size="18">Smooth mouthOpen; close during silence</text>
+    <text x="42" y="681" font-size="16" fill="#52606d">Source: routes.ts, llm.ts, Experience.jsx, lip-sync.js, and Avatar.jsx. October 25, 2026.</text>
+  </g>
+</svg>

@@ -53,6 +53,63 @@ form is currently hidden. Never commit credentials.
 
 `GET /api/health` reports server availability and Render's deployed commit.
 
+## Avatar Case Study
+
+### Objective
+
+Make the portfolio conversational so visitors can ask about experience, projects,
+and skills. The application combines a React interface, a Three.js avatar rendered
+through React Three Fiber, and an Express server that generates short replies
+from the current resume.
+
+### Implementation
+
+The server validates visitor questions and includes the bundled resume facts in
+a Gemini request. Flash-Lite is tried first, with Flash as a fallback and an
+eight-second deadline per attempt. Google Text-to-Speech returns MP3 audio.
+In the browser, `lip-sync.js` measures audio energy in 20 ms frames, normalizes
+the envelope, and samples it at the current playback time. `Avatar.jsx` smoothly
+applies that value to the model's `mouthOpen` morph target.
+
+### Challenges and Results
+
+The earlier remote resume retrieval could delay answers and retain outdated
+facts. Bundling the short resume with the application removes that lookup.
+Speech synthesis has a six-second deadline and returns the successful text answer
+even when audio is unavailable. Tests cover model fallback, timeout handling,
+speech-envelope timing, silence, the shipped mouth morph target, and the served
+resume. AI provider response times still vary; this is not a guaranteed latency.
+
+### Visual Evidence
+
+These two screenshots were captured from the public application on October 25,
+2026. The third visual documents the implemented source-code flow. The same
+figures and captions appear in the [live case study](https://neeraj-v-p.onrender.com/#avatar-case-study).
+
+#### 1. Working desktop interface
+
+![The deployed React interface and 3D avatar](public/assets/avatar-case-study/interface.jpg)
+
+The avatar is rendered alongside the conversation entry point and the portfolio
+navigation. This captures the implemented interface rather than a design mockup.
+
+#### 2. Real resume-grounded conversation
+
+![A real question and answer about expected graduation](public/assets/avatar-case-study/conversation.jpg)
+
+The visitor asks when Neeraj graduates. The reply uses current education details
+from the server's bundled resume context. This screenshot shows the actual
+question and response, not a scripted conversation image.
+
+#### 3. Implemented request and audio flow
+
+![Request flow from visitor input to playback-synchronized mouth animation](public/assets/avatar-case-study/request-flow.svg)
+
+The diagram traces `routes.ts`, `llm.ts`, `Experience.jsx`, `lip-sync.js`, and
+`Avatar.jsx`: validation and context, model generation, speech synthesis, browser
+playback, and mouth animation. The server coordinates both external provider
+requests; text remains usable when speech synthesis fails.
+
 ## Contact Details
 
 Feel free to reach out:  

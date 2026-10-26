@@ -63,6 +63,21 @@ test("missing API routes and assets do not return the SPA HTML", async () => {
   }
 });
 
+test("case study evidence is publicly served as real image assets", async () => {
+  for (const name of ["interface.jpg", "conversation.jpg", "request-flow.svg"]) {
+    const response = await fetch(base + "/assets/avatar-case-study/" + name);
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get("content-type"), /^image\//);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    if (name.endsWith(".jpg")) {
+      assert.deepEqual([...bytes.subarray(0, 3)], [0xff, 0xd8, 0xff]);
+      assert.ok(bytes.length > 10000);
+    } else {
+      assert.match(bytes.toString(), /Implemented avatar request and audio flow/);
+    }
+  }
+});
+
 test("invalid chat requests are rejected before calling AI providers", async () => {
   for (const body of [{}, { query: "   " }, { query: {} }, { query: "x".repeat(2001) }]) {
     const response = await fetch(base + "/api/chat", {
